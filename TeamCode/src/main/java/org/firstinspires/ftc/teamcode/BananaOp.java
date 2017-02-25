@@ -32,11 +32,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import static java.lang.Math.PI;
+import static java.lang.Math.atan;
+import static java.lang.Math.cos;
+import static java.lang.Math.pow;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -52,16 +58,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Template: Iterative OpMode", group="Iterative Opmode")  // @Autonomous(...) is the other common choice
-@Disabled
-public class BanananaOp extends OpMode
+@TeleOp(name="Banana Teleop", group="Banana")  // @Autonomous(...) is the other common choice
+public class BananaOp extends OpMode
 {
     /* Declare OpMode members. */
+    BananaHardware robot = new BananaHardware();
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motorFrontLeft = null;
-    private DcMotor motorFrontRight = null;
-    private DcMotor motorBackLeft = null;
-    private DcMotor motorBackRight = null;
+    private OrientationManager orientationManager;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -75,20 +78,9 @@ public class BanananaOp extends OpMode
          * step (using the FTC Robot Controller app on the phone).
          */
 
-        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
-
-        // leftMotor  = hardwareMap.dcMotor.get("left_drive");
-        // rightMotor = hardwareMap.dcMotor.get("right_drive");
-
-        // eg: Set the drive motor directions:
-        // Reverse the motor that runs backwards when connected directly to the battery
-        // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
-        // telemetry.addData("Status", "Initialized");
+        robot.init(hardwareMap);
+        orientationManager = new OrientationManager(hardwareMap, telemetry);
+        orientationManager.start();
     }
 
     /*
@@ -117,11 +109,12 @@ public class BanananaOp extends OpMode
         // leftMotor.setPower(-gamepad1.left_stick_y);
         // rightMotor.setPower(-gamepad1.right_stick_y);
 
-        motorFrontLeft.setPower(-gamepad1.left_stick_y);
-        motorBackLeft.setPower(-gamepad1.left_stick_y);
-        motorFrontRight.setPower(-gamepad1.right_stick_y);
-        motorBackRight.setPower(-gamepad1.right_stick_y);
+        double direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
+        double orientation = orientationManager.azimuth;
+        // pythagorean
+        double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
 
+        moveRobot(orientation + PI/2 - direction, power, gamepad1.right_stick_x);
     }
 
     /*
@@ -129,6 +122,36 @@ public class BanananaOp extends OpMode
      */
     @Override
     public void stop() {
+        robot.motorFrontLeft.setPower(0);
+        robot.motorBackLeft.setPower(0);
+        robot.motorFrontRight.setPower(0);
+        robot.motorBackRight.setPower(0);
+    }
+
+    void moveRobot(double direction, double power, double rotation) {
+
+        // case 1: only rotation, rotate at full power
+        if (power == 0) {
+            for (DcMotor motor: robot.motors) {
+                motor.setPower(rotation);
+            }
+            return;
+        }
+
+        // case 2/3: there is lateral movement, so calculate that. If there is rotation, average the two.
+        double scale = rotation == 0 ? 1 : 0.5;
+
+        double x = power * cos(direction);
+        double y = power * sin(direction);
+
+        for (int i = 0; i < robot.motors.length; i++) {
+            DcMotor motor = robot.motors[i];
+            double motorX = BananaHardware.MOTOR_XY[2*i-1];
+            double motorY = BananaHardware.MOTOR_XY[2*i];
+            // some dot product magic
+            double dotProduct = x * motorX + y * motorY;
+            motor.setPower(dotProduct * scale + rotation * 0.5);
+        }
     }
 
 }
