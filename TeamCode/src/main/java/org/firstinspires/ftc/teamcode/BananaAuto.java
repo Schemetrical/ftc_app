@@ -93,6 +93,8 @@ public class BananaAuto extends LinearOpModeCamera {
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
+        double voltage = hardwareMap.voltageSensor.get("motor_controller").getVoltage();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
