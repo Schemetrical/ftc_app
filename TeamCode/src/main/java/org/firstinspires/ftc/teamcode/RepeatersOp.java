@@ -52,18 +52,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Template: Iterative OpMode", group="Iterative Opmode")  // @Autonomous(...) is the other common choice
-
+@TeleOp(name="Repeaters Teleop", group="Repeaters")  // @Autonomous(...) is the other common choice
 public class RepeatersOp extends OpMode
 {
     /* Declare OpMode members. */
+    RepeatersHardware robot = new RepeatersHardware ();
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
+    private DcMotor collectorMotor = null;
+    private DcMotor elevatorMotor = null;
+    private DcMotor flickerMotor = null;
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+     //Code to run ONCE when the driver hits INIT
+
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
@@ -76,6 +78,10 @@ public class RepeatersOp extends OpMode
         // rightMotor = hardwareMap.dcMotor.get("right_drive");
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
+        collectorMotor = hardwareMap.dcMotor.get("collectorMotor");
+        elevatorMotor = hardwareMap.dcMotor.get("elevatorMotor");
+        flickerMotor = hardwareMap.dcMotor.get("flickerMotor");
+
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
@@ -116,6 +122,12 @@ public class RepeatersOp extends OpMode
      */
     @Override
     public void stop() {
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
+        robot.collectorMotor.setPower(0);
+        robot.elevatorMotor.setPower(0);
+        robot.flickerMotor.setPower(0);
+
     }
 
 }
