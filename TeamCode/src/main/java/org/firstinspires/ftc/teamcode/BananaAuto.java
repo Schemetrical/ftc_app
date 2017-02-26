@@ -35,44 +35,22 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 import for_camera_opmodes.LinearOpModeCamera;
 
 /**
- * This file illustrates the concept of driving a path based on time.
- * It uses the common Pushbot hardware class to define the drive on the robot.
- * The code is structured as a LinearOpMode
- *
- * The code assumes that you do NOT have encoders on the wheels,
- *   otherwise you would use: PushbotAutoDriveByEncoder;
- *
- *   The desired path in this example is:
- *   - Drive forward for 3 seconds
- *   - Spin right for 1.3 seconds
- *   - Drive Backwards for 1 Second
- *   - Stop and close the claw.
- *
- *  The code is written in a simple form with no optimizations.
- *  However, there are several ways that this type of sequence could be streamlined,
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * Created by Yichen Cao on 2017-02-25.
  */
 
 @Autonomous(name="Banana Autonomous", group="Banana")
 public class BananaAuto extends LinearOpModeCamera {
 
     /* Declare OpMode members. */
-    BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
-    LightSensor lightSensor;
+    private BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
-    private OrientationManager orientationManager;
 
 
     private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
@@ -86,7 +64,7 @@ public class BananaAuto extends LinearOpModeCamera {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        orientationManager = new OrientationManager(hardwareMap, telemetry);
+        OrientationManager orientationManager = new OrientationManager(hardwareMap, telemetry);
         orientationManager.start();
 
         // Send telemetry message to signify robot waiting;
@@ -136,7 +114,7 @@ public class BananaAuto extends LinearOpModeCamera {
 
 
         // get a reference to our Light Sensor object.
-        lightSensor = hardwareMap.lightSensor.get("sensor_light");                // Primary LEGO Light Sensor
+        LightSensor lightSensor = hardwareMap.lightSensor.get("sensor_light");
         //  lightSensor = hardwareMap.opticalDistanceSensor.get("sensor_ods");  // Alternative MR ODS sensor.
 
         // turn on LED of light sensor.
@@ -214,10 +192,9 @@ public class BananaAuto extends LinearOpModeCamera {
         stopCamera();
 
         // Stop all motors
-        robot.motorFrontLeft.setPower(0);
-        robot.motorFrontRight.setPower(0);
-        robot.motorBackLeft.setPower(0);
-        robot.motorBackRight.setPower(0);
+        for (DcMotor motor: robot.motors) {
+            motor.setPower(0);
+        }
         orientationManager.stop();
     }
 }
