@@ -59,12 +59,12 @@ import static java.lang.Math.sqrt;
  */
 
 @TeleOp(name="Banana Teleop", group="Banana")  // @Autonomous(...) is the other common choice
-public class BananaOp extends OpMode
-{
+public class BananaOp extends OpMode {
     /* Declare OpMode members. */
     BananaHardware robot = new BananaHardware();
     private ElapsedTime runtime = new ElapsedTime();
     private OrientationManager orientationManager;
+    boolean relative = true;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -110,9 +110,17 @@ public class BananaOp extends OpMode
         // rightMotor.setPower(-gamepad1.right_stick_y);
 
         double direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
-        double orientation = orientationManager.azimuth;
         // pythagorean
         double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
+
+        if (gamepad1.a) {
+            relative = true;
+        }
+        if (gamepad1.b) {
+            relative = false;
+        }
+
+        double orientation = relative ? orientationManager.azimuth : 0;
 
         moveRobot(orientation + PI/2 - direction, power, gamepad1.right_stick_x);
     }

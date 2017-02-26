@@ -25,8 +25,7 @@ import static java.lang.Math.sqrt;
  *   As the arm servo approaches 0, the arm position moves up (away from the floor).
  *   As the claw servo approaches 0, the claw opens up (drops the game element).
  */
-class BananaHardware
-{
+class BananaHardware {
     /* Public OpMode members. */
     /* Declare OpMode members. */
     DcMotor motorFrontLeft = null;

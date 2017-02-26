@@ -32,12 +32,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+
+import for_camera_opmodes.LinearOpModeCamera;
 
 /**
  * This file illustrates the concept of driving a path based on time.
@@ -61,15 +66,17 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  */
 
 @Autonomous(name="Banana Autonomous", group="Banana")
-public class BananaAuto extends LinearOpMode {
+public class BananaAuto extends LinearOpModeCamera {
 
     /* Declare OpMode members. */
-    HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
+    BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
+    LightSensor lightSensor;
     private ElapsedTime     runtime = new ElapsedTime();
+    private OrientationManager orientationManager;
 
 
-    static final double     FORWARD_SPEED = 0.6;
-    static final double     TURN_SPEED    = 0.5;
+    private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
+    private static final int ds2 = 2;
 
     @Override
     public void runOpMode() {
@@ -79,6 +86,8 @@ public class BananaAuto extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        orientationManager = new OrientationManager(hardwareMap, telemetry);
+        orientationManager.start();
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -90,8 +99,8 @@ public class BananaAuto extends LinearOpMode {
         // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
 
         // Step 1:  Drive forward for 3 seconds
-        robot.leftMotor.setPower(FORWARD_SPEED);
-        robot.rightMotor.setPower(FORWARD_SPEED);
+        robot.motorFrontLeft.setPower(1);
+        robot.motorFrontRight.setPower(1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 3.0)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
@@ -99,8 +108,8 @@ public class BananaAuto extends LinearOpMode {
         }
 
         // Step 2:  Spin right for 1.3 seconds
-        robot.leftMotor.setPower(TURN_SPEED);
-        robot.rightMotor.setPower(-TURN_SPEED);
+        robot.motorFrontLeft.setPower(1);
+        robot.motorFrontRight.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1.3)) {
             telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
@@ -108,8 +117,7 @@ public class BananaAuto extends LinearOpMode {
         }
 
         // Step 3:  Drive Backwards for 1 Second
-        robot.leftMotor.setPower(-FORWARD_SPEED);
-        robot.rightMotor.setPower(-FORWARD_SPEED);
+        robot.motorFrontLeft.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1.0)) {
             telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
@@ -117,13 +125,97 @@ public class BananaAuto extends LinearOpMode {
         }
 
         // Step 4:  Stop and close the claw.
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
-        robot.leftClaw.setPosition(1.0);
-        robot.rightClaw.setPosition(0.0);
+        //blah
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);
+
+
+
+        // get a reference to our Light Sensor object.
+        lightSensor = hardwareMap.lightSensor.get("sensor_light");                // Primary LEGO Light Sensor
+        //  lightSensor = hardwareMap.opticalDistanceSensor.get("sensor_ods");  // Alternative MR ODS sensor.
+
+        // turn on LED of light sensor.
+        lightSensor.enableLed(true);
+
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Ready to run");    //
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        // Abort this loop is started or stopped.
+        while (!(isStarted() || isStopRequested())) {
+
+            // Display the light level while we are waiting to start
+            telemetry.addData("Light Level", lightSensor.getLightDetected());
+            telemetry.update();
+            idle();
+        }
+
+        // Start the robot moving forward, and then begin looking for a white line.
+        robot.motorFrontLeft.setPower(.5);
+        robot.motorFrontRight.setPower(-.5);
+        robot.motorBackLeft.setPower(.5);
+        robot.motorBackRight.setPower(-.5);
+
+        // run until the white line is seen OR the driver presses STOP;
+        while (opModeIsActive() && (lightSensor.getLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  lightSensor.getLightDetected());
+            telemetry.update();
+        }
+
+        String colorString = "NONE";
+
+        while (opModeIsActive()) {
+            if (imageReady()) { // only do this if an image has been returned from the camera
+                int redValue = 0;
+                int blueValue = 0;
+                int greenValue = 0;
+
+                // get image, rotated so (0,0) is in the bottom left of the preview window
+                Bitmap rgbImage;
+                rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
+
+                for (int x = 0; x < rgbImage.getWidth(); x++) {
+                    for (int y = 0; y < rgbImage.getHeight(); y++) {
+                        int pixel = rgbImage.getPixel(x, y);
+                        redValue += red(pixel);
+                        blueValue += blue(pixel);
+                        greenValue += green(pixel);
+                    }
+                }
+                int color = highestColor(redValue, greenValue, blueValue);
+
+                switch (color) {
+                    case 0:
+                        colorString = "RED";
+                        break;
+                    case 1:
+                        colorString = "GREEN";
+                        break;
+                    case 2:
+                        colorString = "BLUE";
+                }
+
+            } else {
+                colorString = "NONE";
+            }
+
+            telemetry.addData("Color:", "Color detected is: " + colorString);
+            telemetry.update();
+            sleep(10);
+        }
+        stopCamera();
+
+        // Stop all motors
+        robot.motorFrontLeft.setPower(0);
+        robot.motorFrontRight.setPower(0);
+        robot.motorBackLeft.setPower(0);
+        robot.motorBackRight.setPower(0);
+        orientationManager.stop();
     }
 }
