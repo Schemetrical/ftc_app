@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class RepeatersHardware {
-    DcMotor leftMotor = null;
-    DcMotor rightMotor = null;
-    DcMotor collectorMotor = null;
-    DcMotor elevatorMotor = null;
-    DcMotor flickerMotor = null;
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+    DcMotor collectorMotor;
+    DcMotor elevatorMotor;
+    DcMotor flickerMotor;
 
-    DcMotor[] motors = {leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
+    DcMotor[] motors;
 
     public void init(HardwareMap ahwMap) {
 
@@ -23,13 +23,12 @@ public class RepeatersHardware {
         elevatorMotor = ahwMap.dcMotor.get("elevatorMotor");
         flickerMotor = ahwMap.dcMotor.get("flickerMotor");
 
-        //set motor power to 0
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-        collectorMotor.setPower(0);
-        elevatorMotor.setPower(0);
-        flickerMotor.setPower(0);
+        motors = new DcMotor[]{leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
 
+        //set motor power to 0
+        for (DcMotor motor: motors) {
+            motor.setPower(0);
+        }
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
 
     }

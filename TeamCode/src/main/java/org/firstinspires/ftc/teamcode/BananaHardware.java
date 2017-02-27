@@ -12,16 +12,16 @@ import static java.lang.Math.sqrt;
 class BananaHardware {
     /* Public OpMode members. */
     /* Declare OpMode members. */
-    DcMotor motorFrontLeft = null;
-    DcMotor motorFrontRight = null;
-    DcMotor motorBackLeft = null;
-    DcMotor motorBackRight = null;
+    DcMotor motorFrontLeft;
+    DcMotor motorFrontRight;
+    DcMotor motorBackLeft;
+    DcMotor motorBackRight;
 
-    DcMotor[] motors = {motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight};
+    DcMotor[] motors;
 
     private static final double SQRT22 = sqrt(2)/2;
 
-    static final double[] MOTOR_XY = {SQRT22, SQRT22, SQRT22, -SQRT22, -SQRT22, SQRT22, -SQRT22, -SQRT22};
+    static final double[] MOTOR_XY = {-SQRT22, -SQRT22, -SQRT22, SQRT22, SQRT22, -SQRT22, SQRT22, SQRT22};
 
     /* Constructor */
     BananaHardware() {
@@ -35,6 +35,8 @@ class BananaHardware {
         motorFrontRight = ahwMap.dcMotor.get("motorFrontRight");
         motorBackLeft = ahwMap.dcMotor.get("motorBackLeft");
         motorBackRight = ahwMap.dcMotor.get("motorBackRight");
+
+        motors = new DcMotor[]{motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight};
 
         // Set all motors to zero power
         for (DcMotor motor: motors) {

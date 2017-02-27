@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Repeaters Teleop", group="Repeaters")  // @Autonomous(...) is the other common choice
@@ -86,12 +87,9 @@ public class RepeatersOp extends OpMode
      */
     @Override
     public void stop() {
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
-        robot.collectorMotor.setPower(0);
-        robot.elevatorMotor.setPower(0);
-        robot.flickerMotor.setPower(0);
-
+        for (DcMotor motor: robot.motors) {
+            motor.setPower(0);
+        }
     }
 
 }

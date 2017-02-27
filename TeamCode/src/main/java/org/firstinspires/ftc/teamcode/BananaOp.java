@@ -99,7 +99,13 @@ public class BananaOp extends OpMode {
         // leftMotor.setPower(-gamepad1.left_stick_y);
         // rightMotor.setPower(-gamepad1.right_stick_y);
 
-        double direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
+        double direction;
+        if (gamepad1.left_stick_x == 0) {
+            direction = PI/2 * (-gamepad1.left_stick_y > 0 ? 1 : -1);
+        } else {
+            direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
+            if (gamepad1.left_stick_x < 0) direction += PI;
+        }
         // pythagorean
         double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
 
@@ -110,9 +116,11 @@ public class BananaOp extends OpMode {
             relative = false;
         }
 
+        telemetry.addData("Orientation", orientationManager.azimuth);
+
         double orientation = relative ? orientationManager.azimuth : 0;
 
-        moveRobot(orientation + PI/2 - direction, power, gamepad1.right_stick_x);
+        moveRobot(orientation + direction, power, -gamepad1.right_stick_x);
     }
 
     /*
@@ -126,6 +134,8 @@ public class BananaOp extends OpMode {
     }
 
     void moveRobot(double direction, double power, double rotation) {
+
+        telemetry.addData("Input", "Direction " + direction + " Power " + power);
 
         // case 1: only rotation, rotate at full power
         if (power == 0) {
@@ -143,11 +153,14 @@ public class BananaOp extends OpMode {
 
         for (int i = 0; i < robot.motors.length; i++) {
             DcMotor motor = robot.motors[i];
-            double motorX = BananaHardware.MOTOR_XY[2*i-1];
-            double motorY = BananaHardware.MOTOR_XY[2*i];
+            double motorX = BananaHardware.MOTOR_XY[2*i];
+            double motorY = BananaHardware.MOTOR_XY[2*i+1];
             // some dot product magic
             double dotProduct = x * motorX + y * motorY;
-            motor.setPower(dotProduct * scale + rotation * 0.5);
+            double finalPower = dotProduct * scale + rotation * 0.5;
+            if (Double.isNaN(finalPower)) finalPower = 0;
+            motor.setPower(finalPower);
+            telemetry.addData("Motor", i + " " + finalPower);
         }
     }
 
