@@ -53,8 +53,8 @@ public class BananaOp extends OpMode {
     /* Declare OpMode members. */
     BananaHardware robot = new BananaHardware();
     private ElapsedTime runtime = new ElapsedTime();
-    private OrientationManager orientationManager;
     boolean relative = true;
+    OrientationManager orientationManager = new OrientationManager();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -69,8 +69,9 @@ public class BananaOp extends OpMode {
          */
 
         robot.init(hardwareMap);
-        orientationManager = new OrientationManager(hardwareMap, telemetry);
-        orientationManager.start();
+//        orientationManager = new OrientationManager(hardwareMap, telemetry);
+//        orientationManager.start();
+        runtime.reset();
     }
 
     /*
@@ -85,7 +86,7 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void start() {
-        runtime.reset();
+        orientationManager.start(hardwareMap);
     }
 
     /*
@@ -115,8 +116,9 @@ public class BananaOp extends OpMode {
         if (gamepad1.b) {
             relative = false;
         }
-
-        telemetry.addData("Orientation", orientationManager.azimuth);
+        if (gamepad1.x) {
+            orientationManager.azimuthInitialized = false;
+        }
 
         double orientation = relative ? orientationManager.azimuth : 0;
 
@@ -131,9 +133,10 @@ public class BananaOp extends OpMode {
         for (DcMotor motor: robot.motors) {
             motor.setPower(0);
         }
+        orientationManager.stop();
     }
 
-    void moveRobot(double direction, double power, double rotation) {
+    private void moveRobot(double direction, double power, double rotation) {
 
         telemetry.addData("Input", "Direction " + direction + " Power " + power);
 
