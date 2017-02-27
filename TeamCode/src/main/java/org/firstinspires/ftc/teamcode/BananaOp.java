@@ -130,7 +130,7 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void stop() {
-        for (DcMotor motor: robot.motors) {
+        for (DcMotor motor: robot.driveMotors) {
             motor.setPower(0);
         }
         orientationManager.stop();
@@ -142,7 +142,7 @@ public class BananaOp extends OpMode {
 
         // case 1: only rotation, rotate at full power
         if (power == 0) {
-            for (DcMotor motor: robot.motors) {
+            for (DcMotor motor: robot.driveMotors) {
                 motor.setPower(rotation);
             }
             return;
@@ -154,8 +154,8 @@ public class BananaOp extends OpMode {
         double x = power * cos(direction);
         double y = power * sin(direction);
 
-        for (int i = 0; i < robot.motors.length; i++) {
-            DcMotor motor = robot.motors[i];
+        for (int i = 0; i < robot.driveMotors.length; i++) {
+            DcMotor motor = robot.driveMotors[i];
             double motorX = BananaHardware.MOTOR_XY[2*i];
             double motorY = BananaHardware.MOTOR_XY[2*i+1];
             // some dot product magic

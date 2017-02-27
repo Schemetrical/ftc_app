@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import static java.lang.Math.sqrt;
 
@@ -17,7 +18,11 @@ class BananaHardware {
     DcMotor motorBackLeft;
     DcMotor motorBackRight;
 
-    DcMotor[] motors;
+    DcMotor motorFlicker;
+    DcMotor motorLinearSlideWinch;
+    DcMotor motorBallSpinner;
+
+    DcMotor[] driveMotors;
 
     private static final double SQRT22 = sqrt(2)/2;
 
@@ -36,10 +41,14 @@ class BananaHardware {
         motorBackLeft = ahwMap.dcMotor.get("motorBackLeft");
         motorBackRight = ahwMap.dcMotor.get("motorBackRight");
 
-        motors = new DcMotor[]{motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight};
+        motorFlicker = ahwMap.dcMotor.get("motorFlicker");
+        motorLinearSlideWinch = ahwMap.dcMotor.get("motorLinearSlideWinch");
+        motorBallSpinner = ahwMap.dcMotor.get("motorBallSpinner");
 
-        // Set all motors to zero power
-        for (DcMotor motor: motors) {
+        driveMotors = new DcMotor[]{motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight};
+
+        // Set all driveMotors to zero power
+        for (DcMotor motor: driveMotors) {
             motor.setPower(0);
         }
     }
