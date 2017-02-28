@@ -71,16 +71,18 @@ public class BananaAuto extends LinearOpModeCamera {
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
-        double voltage = hardwareMap.voltageSensor.get("motor_controller").getVoltage();
+//        double voltage = hardwareMap.voltageSensor.get("motor_controller").getVoltage();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
 
+        startCamera();
+
         // Step 1:  Drive forward for 1 second
-        robot.motorFrontLeft.setPower(-0.5);
-        robot.motorBackRight.setPower(0.5);
+        robot.motorFrontLeft.setPower(-1);
+        robot.motorBackRight.setPower(1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
@@ -90,7 +92,7 @@ public class BananaAuto extends LinearOpModeCamera {
         // Step 2:  Shoot
         robot.motorFrontLeft.setPower(0);
         robot.motorBackRight.setPower(0);
-        robot.motorFrontLeft.setPower(1);
+        robot.motorFlicker.setPower(1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1.5)) {
             telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
@@ -99,8 +101,8 @@ public class BananaAuto extends LinearOpModeCamera {
 
         // Step 3:  Move again until white line
         robot.motorFlicker.setPower(0);
-        robot.motorFrontLeft.setPower(-0.5);
-        robot.motorBackRight.setPower(0.5);
+        robot.motorFrontLeft.setPower(-1);
+        robot.motorBackRight.setPower(1);
         runtime.reset();
 
         // get a reference to our Light Sensor object.
@@ -114,7 +116,7 @@ public class BananaAuto extends LinearOpModeCamera {
         while (opModeIsActive() && (lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < 6.0)) {
 
             // Display the light level while we are looking for the line
-            telemetry.addData("Light Level",  lightSensor.getLightDetected());
+            telemetry.addData("Leg 3 Light: ",  lightSensor.getLightDetected());
             telemetry.update();
         }
 
@@ -122,23 +124,25 @@ public class BananaAuto extends LinearOpModeCamera {
         robot.motorFrontLeft.setPower(0);
         robot.motorBackRight.setPower(0);
 
-        hitLightSequence();
+        if (opModeIsActive()) {
+            hitLightSequence();
+        }
 
         // Step 5: Find line again, using diagonal but can drive along easy axis
-        robot.motorFrontLeft.setPower(-0.5);
-        robot.motorFrontRight.setPower(0.5);
-        robot.motorBackLeft.setPower(-0.5);
-        robot.motorBackRight.setPower(0.5);
+        robot.motorFrontLeft.setPower(-1);
+        robot.motorFrontRight.setPower(1);
+        robot.motorBackLeft.setPower(-1);
+        robot.motorBackRight.setPower(1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 6: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 4: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
         while (opModeIsActive() && (lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < 6.0)) {
 
             // Display the light level while we are looking for the line
-            telemetry.addData("Light Level",  lightSensor.getLightDetected());
+            telemetry.addData("Leg 5 Light: ",  lightSensor.getLightDetected());
             telemetry.update();
         }
 
@@ -147,9 +151,16 @@ public class BananaAuto extends LinearOpModeCamera {
             motor.setPower(0);
         }
 
-        hitLightSequence();
+        if (opModeIsActive()) {
+            hitLightSequence();
+        }
+
+        stopCamera();
 
         // Step 7: Park Robot?
+
+        telemetry.addData("FINISH",  lightSensor.getLightDetected());
+        telemetry.update();
 
         // Stop all driveMotors
         for (DcMotor motor: robot.driveMotors) {
@@ -162,13 +173,13 @@ public class BananaAuto extends LinearOpModeCamera {
 
         boolean redOnLeft = isRedOnLeft();
 
-        robot.motorFrontLeft.setPower(redOnLeft ? -0.5 : 0.5);
-        robot.motorFrontRight.setPower(redOnLeft ? 0.5 : -0.5);
-        robot.motorBackLeft.setPower(redOnLeft ? -0.5 : 0.5);
-        robot.motorBackRight.setPower(redOnLeft ? 0.5 : -0.5);
+        robot.motorFrontLeft.setPower(redOnLeft ? -1 : 1);
+        robot.motorFrontRight.setPower(redOnLeft ? 1 : -1);
+        robot.motorBackLeft.setPower(redOnLeft ? -1 : 1);
+        robot.motorBackRight.setPower(redOnLeft ? 1 : -1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
+            telemetry.addData("Path", "Offset: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
@@ -177,51 +188,28 @@ public class BananaAuto extends LinearOpModeCamera {
         }
         sleep(500);
 
-        robot.motorFrontLeft.setPower(-0.5);
-        robot.motorFrontRight.setPower(-0.5);
-        robot.motorBackLeft.setPower(0.5);
-        robot.motorBackRight.setPower(0.5);
+        robot.motorFrontLeft.setPower(-1);
+        robot.motorFrontRight.setPower(-1);
+        robot.motorBackLeft.setPower(1);
+        robot.motorBackRight.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
-            telemetry.addData("Path", "Leg 4: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Path", "Approach: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        robot.motorFrontLeft.setPower(0.5);
-        robot.motorFrontRight.setPower(0.5);
-        robot.motorBackLeft.setPower(-0.5);
-        robot.motorBackRight.setPower(-0.5);
+        robot.motorFrontLeft.setPower(1);
+        robot.motorFrontRight.setPower(1);
+        robot.motorBackLeft.setPower(-1);
+        robot.motorBackRight.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
+            telemetry.addData("Path", "Back: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
         for (DcMotor motor: robot.driveMotors) {
             motor.setPower(0);
-        }
-
-        // wait till light allows input again
-        sleep(3000);
-
-        robot.motorFrontLeft.setPower(-0.5);
-        robot.motorFrontRight.setPower(-0.5);
-        robot.motorBackLeft.setPower(0.5);
-        robot.motorBackRight.setPower(0.5);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
-            telemetry.addData("Path", "Leg 4: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        robot.motorFrontLeft.setPower(0.5);
-        robot.motorFrontRight.setPower(0.5);
-        robot.motorBackLeft.setPower(-0.5);
-        robot.motorBackRight.setPower(-0.5);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
         }
     }
 
@@ -251,13 +239,13 @@ public class BananaAuto extends LinearOpModeCamera {
 
                 redOnLeft = color == 0;
                 finished = true;
+                telemetry.addData("Color:", redOnLeft ? "RED BLUE" : "BLUE RED");
+                telemetry.update();
+            } else {
+                telemetry.addData("Color:", "Getting");
+                telemetry.update();
             }
-
-            telemetry.addData("Color:", "Red on left: " + redOnLeft);
-            telemetry.update();
-            sleep(10);
         }
-        stopCamera();
         return redOnLeft;
     }
 }

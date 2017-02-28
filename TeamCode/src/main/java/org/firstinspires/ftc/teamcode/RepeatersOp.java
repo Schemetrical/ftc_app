@@ -49,11 +49,21 @@ public class RepeatersOp extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-         robot.leftMotor.setPower(-gamepad1.left_stick_y);
-         robot.rightMotor.setPower(-gamepad1.right_stick_y);
-         robot.collectorMotor.setPower(gamepad1.left_trigger);
-         robot.elevatorMotor.setPower(gamepad2.left_trigger);
-         robot.flickerMotor.setPower(gamepad2.x);
+        robot.leftMotor.setPower(-gamepad1.left_stick_y);
+        robot.rightMotor.setPower(-gamepad1.right_stick_y);
+
+        robot.collectorMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
+
+        robot.elevatorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+
+        if (gamepad2.x) {
+            robot.flickerMotor.setPower(1);
+        } else if (gamepad2.y) {
+            robot.flickerMotor.setPower(-1);
+        } else {
+            robot.flickerMotor.setPower(0);
+        }
+
         //driver1 drives the robot and sweeps up balls, driver2 elevates the balls and shoots them
     }
 
