@@ -45,6 +45,8 @@ class BananaHardware {
         motorLinearSlideWinch = ahwMap.dcMotor.get("motorLinearSlideWinch");
         motorBallSpinner = ahwMap.dcMotor.get("motorBallSpinner");
 
+        motorLinearSlideWinch.setDirection(DcMotor.Direction.REVERSE);
+
         driveMotors = new DcMotor[]{motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight};
 
         // Set all driveMotors to zero power

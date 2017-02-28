@@ -100,7 +100,7 @@ public class BananaOp extends OpMode {
         // leftMotor.setPower(-gamepad1.left_stick_y);
         // rightMotor.setPower(-gamepad1.right_stick_y);
 
-        // JOYSTICK 1
+        // GAMEPAD 1
 
         double direction;
         if (gamepad1.left_stick_x == 0) {
@@ -127,10 +127,10 @@ public class BananaOp extends OpMode {
         // should test out square root curve power
         moveRobot(orientation + direction, power, -gamepad1.right_stick_x);
 
-        // JOYSTICK 2
+        // GAMEPAD 2
 
-        robot.motorBallSpinner.setPower(gamepad2.left_stick_y);
-        robot.motorLinearSlideWinch.setPower(gamepad2.right_stick_y);
+        robot.motorBallSpinner.setPower(-gamepad2.left_stick_y);
+        robot.motorLinearSlideWinch.setPower(-gamepad2.right_stick_y);
         if (gamepad2.a) {
             robot.motorFlicker.setPower(1);
         } else if (gamepad2.b) {
@@ -165,7 +165,7 @@ public class BananaOp extends OpMode {
         }
 
         // case 2/3: there is lateral movement, so calculate that. If there is rotation, average the two.
-        double scale = rotation == 0 ? 1 : 0.5;
+        double scale = rotation == 0 ? 1 : 0.7;
 
         double x = power * cos(direction);
         double y = power * sin(direction);
