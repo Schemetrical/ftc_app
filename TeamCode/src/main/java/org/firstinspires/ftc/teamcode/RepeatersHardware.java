@@ -16,7 +16,7 @@ public class RepeatersHardware {
 
     public void init(HardwareMap ahwMap) {
 
-        //define and initialize motors
+        //define and initialize driveMotors
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
