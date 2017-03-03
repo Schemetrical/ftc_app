@@ -52,11 +52,9 @@ public class RepeatersOp extends OpMode
         robot.leftMotor.setPower(-gamepad1.left_stick_y);
         robot.rightMotor.setPower(-gamepad1.right_stick_y);
 
-        // function to turn robot 180 degrees
-        robot.leftMotor.setPower(-gamepad1.left_trigger - gamepad1.right_trigger);
+        // function to turn robot 180 degree
+        robot.leftMotor.setPower(-gamepad1.left_trigger + gamepad1.right_trigger);
         robot.rightMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
-        robot.leftMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
-        robot.rightMotor.setPower(-gamepad1.left_trigger - gamepad1.right_trigger);
 
         robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
         robot.elevatorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
