@@ -36,7 +36,7 @@ public class RepeatersAuto extends LinearOpModeCamera {
         waitForStart();
 
         // Step 1:  Drive forward to aim
-             robot.rightMotor.setPower(-1);
+            robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1)) {

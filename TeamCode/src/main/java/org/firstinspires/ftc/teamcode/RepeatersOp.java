@@ -58,7 +58,7 @@ public class RepeatersOp extends OpMode
         robot.leftMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
         robot.rightMotor.setPower(-gamepad1.left_trigger - gamepad1.right_trigger);
 
-        robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad1.right_trigger);
+        robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
         robot.elevatorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
 
         if (gamepad2.x) {
