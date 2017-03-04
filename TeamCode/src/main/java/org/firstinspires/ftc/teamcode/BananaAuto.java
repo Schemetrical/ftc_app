@@ -71,6 +71,8 @@ public class BananaAuto extends LinearOpModeCamera {
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
+        robot.servoButtonPusher.setPosition(0.5);
+
 //        double voltage = hardwareMap.voltageSensor.get("motor_controller").getVoltage();
 
         // Wait for the game to start (driver presses PLAY)
@@ -166,6 +168,10 @@ public class BananaAuto extends LinearOpModeCamera {
         for (DcMotor motor: robot.driveMotors) {
             motor.setPower(0);
         }
+        robot.motorFlicker.setPower(0);
+        robot.motorBallSpinner.setPower(0);
+        robot.motorLinearSlideWinch.setPower(0);
+
         orientationManager.stop();
     }
 
@@ -173,20 +179,12 @@ public class BananaAuto extends LinearOpModeCamera {
 
         boolean redOnLeft = isRedOnLeft();
 
-        robot.motorFrontLeft.setPower(redOnLeft ? -1 : 1);
-        robot.motorFrontRight.setPower(redOnLeft ? 1 : -1);
-        robot.motorBackLeft.setPower(redOnLeft ? -1 : 1);
-        robot.motorBackRight.setPower(redOnLeft ? 1 : -1);
+        robot.servoButtonPusher.setPosition(redOnLeft ? 0 : 1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
-            telemetry.addData("Path", "Offset: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Servo", "Rotating servo for: %2.5f S", runtime.seconds());
             telemetry.update();
         }
-
-        for (DcMotor motor: robot.driveMotors) {
-            motor.setPower(0);
-        }
-        sleep(500);
 
         robot.motorFrontLeft.setPower(-1);
         robot.motorFrontRight.setPower(-1);
@@ -207,6 +205,8 @@ public class BananaAuto extends LinearOpModeCamera {
             telemetry.addData("Path", "Back: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
+        robot.servoButtonPusher.setPosition(0.5);
 
         for (DcMotor motor: robot.driveMotors) {
             motor.setPower(0);
