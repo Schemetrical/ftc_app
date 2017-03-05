@@ -65,6 +65,10 @@ android {
         //
         versionCode vCode
         versionName vName
+
+        jackOptions {
+            enabled = true
+        }
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
