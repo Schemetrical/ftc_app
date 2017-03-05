@@ -64,8 +64,6 @@ public class BananaAuto extends LinearOpModeCamera {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        OrientationManager orientationManager = new OrientationManager();
-        orientationManager.start(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");
