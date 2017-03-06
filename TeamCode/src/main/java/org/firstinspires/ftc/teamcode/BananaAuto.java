@@ -69,7 +69,7 @@ public class BananaAuto extends LinearOpModeCamera {
         telemetry.addData("Status", "Ready to run");
         telemetry.update();
 
-        robot.servoButtonPusher.setPosition(0.5);
+        robot.servoButtonRotate.setPosition(0.5);
         robot.lightSensor.enableLed(true);
 
 //        double voltage = hardwareMap.voltageSensor.get("motor_controller").getVoltage();
@@ -110,21 +110,32 @@ public class BananaAuto extends LinearOpModeCamera {
 
         // Step 7: Push Button
         performActionWithDuration(() -> {
-            robot.servoButtonPusher.setPosition(isRedOnLeft() ? 0 : 1);
-        }, 2, "Push Button");
+            robot.servoButtonLinearSlide.setPower(1);
+        }, 1, "Push Button 1");
+        performActionWithDuration(() -> {
+            robot.servoButtonLinearSlide.setPower(1);
+            robot.servoButtonRotate.setPosition(isRedOnLeft() ? 0 : 1);
+        }, 1, "Push Button 2");
+        robot.servoButtonLinearSlide.setPower(0);
 
         // Step 8: Go to white line
         findWhiteLine(6);
 
         // Step 9: Push Button
         performActionWithDuration(() -> {
-            robot.servoButtonPusher.setPosition(isRedOnLeft() ? 0 : 1);
-        }, 2, "Push Button");
+            robot.servoButtonLinearSlide.setPower(1);
+        }, 1, "Push Button 3");
+        performActionWithDuration(() -> {
+            robot.servoButtonLinearSlide.setPower(1);
+            robot.servoButtonRotate.setPosition(isRedOnLeft() ? 0 : 1);
+        }, 1, "Push Button 3");
 
         // Step 10: Turn
         performActionWithDuration(() -> {
+            robot.servoButtonLinearSlide.setPower(-1);
             robot.move(MOVE_SPEED, -MOVE_SPEED);
         }, .5, "Turn");
+        robot.servoButtonLinearSlide.setPower(0);
 
         // Step 11: Move until bumping center pole
         performActionWithDuration(() -> {
