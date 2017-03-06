@@ -125,7 +125,7 @@ public class BananaOp extends OpMode {
         double orientation = relative ? orientationManager.azimuth : 0;
 
         // should test out square root curve power
-        moveRobot(orientation + direction, power, -gamepad1.right_stick_x);
+        moveRobot(orientation + direction, power, -gamepad1.right_stick_x / 2);
 
         // GAMEPAD 2
 
@@ -139,6 +139,12 @@ public class BananaOp extends OpMode {
             robot.motorFlicker.setPower(0);
         }
 
+        if (gamepad2.x) {
+            robot.servoForkliftRelease.setPower(1.0);
+        } else {
+            robot.servoForkliftRelease.setPower(0);
+        }
+
     }
 
     /*
@@ -149,6 +155,9 @@ public class BananaOp extends OpMode {
         for (DcMotor motor: robot.driveMotors) {
             motor.setPower(0);
         }
+        robot.motorFlicker.setPower(0);
+        robot.motorBallSpinner.setPower(0);
+        robot.motorLinearSlideWinch.setPower(0);
         orientationManager.stop();
     }
 

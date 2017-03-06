@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,6 +22,9 @@ class BananaHardware {
     DcMotor motorFlicker;
     DcMotor motorLinearSlideWinch;
     DcMotor motorBallSpinner;
+
+    Servo servoButtonPusher;
+    CRServo servoForkliftRelease;
 
     DcMotor[] driveMotors;
 
@@ -48,6 +52,9 @@ class BananaHardware {
         motorLinearSlideWinch.setDirection(DcMotor.Direction.REVERSE);
 
         driveMotors = new DcMotor[]{motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight};
+
+        servoButtonPusher = ahwMap.servo.get("servoButtonPusher");
+        servoForkliftRelease = ahwMap.crservo.get("servoForkliftRelease");
 
         // Set all driveMotors to zero power
         for (DcMotor motor: driveMotors) {
