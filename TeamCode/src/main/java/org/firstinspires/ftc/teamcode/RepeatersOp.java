@@ -56,6 +56,9 @@ public class RepeatersOp extends OpMode
         }   else if (gamepad1.dpad_up) {
             robot.leftMotor.setPower(1);
             robot.rightMotor.setPower(1);
+        }   else if (gamepad1.dpad_down) {
+            robot.leftMotor.setPower(-1);
+            robot.rightMotor.setPower(-1);
         }   else {
             robot.leftMotor.setPower(-gamepad1.left_stick_y);
             robot.rightMotor.setPower(-gamepad1.right_stick_y);
