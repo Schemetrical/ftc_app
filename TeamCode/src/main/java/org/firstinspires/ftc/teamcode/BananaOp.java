@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -60,6 +61,9 @@ public class BananaOp extends OpMode {
          */
 
         robot.init(hardwareMap);
+
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        orientationManager = new OrientationManager(hardwareMap, telemetry);
 //        orientationManager.start();
         runtime.reset();
@@ -78,6 +82,8 @@ public class BananaOp extends OpMode {
     @Override
     public void start() {
         robot.servoButtonRotate.setPosition(1.0);
+        robot.servoButtonLinearSlide.setPower(robot.STOPPING_SERVO);
+        robot.servoBallStopper.setPosition(0.0);
     }
 
     /*
@@ -100,14 +106,22 @@ public class BananaOp extends OpMode {
 
         // GAMEPAD 2
         robot.motorBallSpinner.setPower(-gamepad2.left_stick_y);
-        robot.motorLinearSlideWinch.setPower(-gamepad2.right_stick_y);
-        if (gamepad2.a) {
+        robot.winch(-gamepad2.right_stick_y);
+        if (gamepad2.b) {
             robot.motorFlicker.setPower(1);
-        } else if (gamepad2.b) {
+        } else if (gamepad2.a) {
             robot.motorFlicker.setPower(-1);
         } else {
             robot.motorFlicker.setPower(0);
         }
+
+        if (gamepad2.right_bumper) {
+            robot.servoBallStopper.setPosition(0.4);
+        } else {
+            robot.servoBallStopper.setPosition(0.0);
+        }
+
+        robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + robot.STOPPING_SERVO);
 
         if (gamepad2.x) {
             robot.servoForkliftRelease.setPower(1.0);

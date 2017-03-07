@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
@@ -15,24 +16,22 @@ import static java.lang.Math.sqrt;
 class BananaHardware {
     /* Public OpMode members. */
     /* Declare OpMode members. */
-    private DcMotorSimple motorLeft;
-    private DcMotorSimple motorRight;
+    DcMotor motorLeft, motorRight;
+    private DcMotorSimple motorLinearSlideWinchLeft, motorLinearSlideWinchRight;
 
     DcMotorSimple motorFlicker;
-    DcMotorSimple motorLinearSlideWinch;
     DcMotorSimple motorBallSpinner;
 
     CRServo servoButtonLinearSlide;
     Servo servoButtonRotate;
     CRServo servoForkliftRelease;
+    Servo servoBallStopper;
 
     LightSensor lightSensor;
 
     DcMotorSimple[] allMotors;
 
-    private static final double SQRT22 = sqrt(2)/2;
-
-    static final double[] MOTOR_XY = {-SQRT22, -SQRT22, -SQRT22, SQRT22, SQRT22, -SQRT22, SQRT22, SQRT22};
+    static final double STOPPING_SERVO = 0.08;
 
     /* Constructor */
     BananaHardware() {
@@ -46,24 +45,38 @@ class BananaHardware {
         motorRight = ahwMap.dcMotor.get("mr");
 
         motorFlicker = ahwMap.dcMotor.get("mf");
-        motorLinearSlideWinch = ahwMap.dcMotor.get("mlsw");
+        motorLinearSlideWinchLeft = ahwMap.dcMotor.get("mlswl");
+        motorLinearSlideWinchRight = ahwMap.dcMotor.get("mlswr");
         motorBallSpinner = ahwMap.dcMotor.get("mbs");
 
-        motorLinearSlideWinch.setDirection(DcMotorSimple.Direction.REVERSE);
+//        motorLinearSlideWinchLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFlicker.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        allMotors = new DcMotorSimple[]{motorLeft, motorRight, motorFlicker, motorLinearSlideWinch, motorBallSpinner};
+        allMotors = new DcMotorSimple[]{
+                motorLeft,
+                motorRight,
+                motorFlicker,
+                motorLinearSlideWinchLeft,
+                motorLinearSlideWinchRight,
+                motorBallSpinner};
 
-        lightSensor = ahwMap.lightSensor.get("sl");
+        lightSensor = ahwMap.lightSensor.get("ls");
+
         servoForkliftRelease = ahwMap.crservo.get("sflr");
         servoButtonLinearSlide = ahwMap.crservo.get("sbls");
         servoButtonRotate = ahwMap.servo.get("sbr");
+        servoBallStopper = ahwMap.servo.get("sbs");
 
         // Set all motors to zero power
         for (DcMotorSimple motor: allMotors) {
             motor.setPower(0);
         }
+    }
+
+    void winch(double power) {
+        motorLinearSlideWinchLeft.setPower(power);
+        motorLinearSlideWinchRight.setPower(power);
     }
 
     void move(double left, double right) {
