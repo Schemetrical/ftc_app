@@ -49,27 +49,40 @@ public class RepeatersOp extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-        robot.leftMotor.setPower(-gamepad1.left_stick_y);
-        robot.rightMotor.setPower(-gamepad1.right_stick_y);
+        if (gamepad1.left_trigger > 0 || gamepad1.right_trigger > 0) {
+            // function to turn robot 180 degree
+            robot.leftMotor.setPower(-gamepad1.left_trigger + gamepad1.right_trigger);
+            robot.rightMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
+        }   else if (gamepad1.dpad_up) {
+            robot.leftMotor.setPower(1);
+            robot.rightMotor.setPower(1);
+        }   else if (gamepad1.dpad_down) {
+            robot.leftMotor.setPower(-1);
+            robot.rightMotor.setPower(-1);
+        }   else {
+            robot.leftMotor.setPower(-gamepad1.left_stick_y);
+            robot.rightMotor.setPower(-gamepad1.right_stick_y);
+        }
 
-        robot.collectorMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
 
-        robot.elevatorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+        robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+        robot.elevatorMotor.setPower(-gamepad2.left_stick_y);
 
-        if (gamepad2.x) {
+        if (gamepad1.x) {
             robot.flickerMotor.setPower(1);
-        } else if (gamepad2.y) {
+        } else if (gamepad1.y) {
             robot.flickerMotor.setPower(-1);
         } else {
             robot.flickerMotor.setPower(0);
         }
 
-        //driver1 drives the robot and sweeps up balls, driver2 elevates the balls and shoots them
+
+        //driver1 drives the robot and rotates robot, driver2 collects - elevates - and shoots balls
     }
 
     /*
      * Code to run ONCE after the driver hits STOP
-     */
+                                                                     */
     @Override
     public void stop() {
         for (DcMotor motor: robot.motors) {

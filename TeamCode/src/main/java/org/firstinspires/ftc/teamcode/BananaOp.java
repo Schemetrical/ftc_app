@@ -35,14 +35,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import static java.lang.Math.PI;
-import static java.lang.Math.atan;
-import static java.lang.Math.cos;
-import static java.lang.Math.pow;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
 
 /**
  * Created by Yichen Cao on 2017-02-25.
@@ -53,8 +47,6 @@ public class BananaOp extends OpMode {
     /* Declare OpMode members. */
     BananaHardware robot = new BananaHardware();
     private ElapsedTime runtime = new ElapsedTime();
-    boolean relative = true;
-    OrientationManager orientationManager = new OrientationManager();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -69,6 +61,9 @@ public class BananaOp extends OpMode {
          */
 
         robot.init(hardwareMap);
+
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        orientationManager = new OrientationManager(hardwareMap, telemetry);
 //        orientationManager.start();
         runtime.reset();
@@ -86,7 +81,9 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void start() {
-        orientationManager.start(hardwareMap);
+        robot.servoButtonRotate.setPosition(1.0);
+        robot.servoButtonLinearSlide.setPower(robot.STOPPING_SERVO);
+        robot.servoBallStopper.setPosition(0.0);
     }
 
     /*
@@ -100,43 +97,38 @@ public class BananaOp extends OpMode {
         // leftMotor.setPower(-gamepad1.left_stick_y);
         // rightMotor.setPower(-gamepad1.right_stick_y);
 
-        // JOYSTICK 1
-
-        double direction;
-        if (gamepad1.left_stick_x == 0) {
-            direction = PI/2 * (-gamepad1.left_stick_y > 0 ? 1 : -1);
+        // GAMEPAD 1
+        if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
+            robot.rotate(gamepad1.right_trigger - gamepad1.left_trigger);
         } else {
-            direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
-            if (gamepad1.left_stick_x < 0) direction += PI;
-        }
-        // pythagorean
-        double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
-
-        if (gamepad1.a) {
-            relative = true;
-        }
-        if (gamepad1.b) {
-            relative = false;
-        }
-        if (gamepad1.x) {
-            orientationManager.azimuthInitialized = false;
+            robot.move(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
         }
 
-        double orientation = relative ? orientationManager.azimuth : 0;
-
-        // should test out square root curve power
-        moveRobot(orientation + direction, power, -gamepad1.right_stick_x);
-
-        // JOYSTICK 2
-
-        robot.motorBallSpinner.setPower(gamepad2.left_stick_y);
-        robot.motorLinearSlideWinch.setPower(gamepad2.right_stick_y);
-        if (gamepad2.a) {
+        // GAMEPAD 2
+        robot.motorBallSpinner.setPower(-gamepad2.left_stick_y);
+        robot.winch(-gamepad2.right_stick_y);
+        if (gamepad2.b) {
             robot.motorFlicker.setPower(1);
-        } else if (gamepad2.b) {
+        } else if (gamepad2.a) {
             robot.motorFlicker.setPower(-1);
         } else {
             robot.motorFlicker.setPower(0);
+        }
+
+        if (gamepad2.right_bumper) {
+            robot.servoBallStopper.setPosition(0.4);
+        } else {
+            robot.servoBallStopper.setPosition(0.0);
+        }
+
+        robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + robot.STOPPING_SERVO);
+
+        if (gamepad2.x) {
+            robot.servoForkliftRelease.setPower(1.0);
+        } else if (gamepad2.y) {
+            robot.servoForkliftRelease.setPower(-1.0);
+        } else {
+            robot.servoForkliftRelease.setPower(0);
         }
 
     }
@@ -146,40 +138,8 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void stop() {
-        for (DcMotor motor: robot.driveMotors) {
+        for (DcMotorSimple motor: robot.allMotors) {
             motor.setPower(0);
-        }
-        orientationManager.stop();
-    }
-
-    private void moveRobot(double direction, double power, double rotation) {
-
-        telemetry.addData("Input", "Direction " + direction + " Power " + power);
-
-        // case 1: only rotation, rotate at full power
-        if (power == 0) {
-            for (DcMotor motor: robot.driveMotors) {
-                motor.setPower(rotation);
-            }
-            return;
-        }
-
-        // case 2/3: there is lateral movement, so calculate that. If there is rotation, average the two.
-        double scale = rotation == 0 ? 1 : 0.5;
-
-        double x = power * cos(direction);
-        double y = power * sin(direction);
-
-        for (int i = 0; i < robot.driveMotors.length; i++) {
-            DcMotor motor = robot.driveMotors[i];
-            double motorX = BananaHardware.MOTOR_XY[2*i];
-            double motorY = BananaHardware.MOTOR_XY[2*i+1];
-            // some dot product magic
-            double dotProduct = x * motorX + y * motorY;
-            double finalPower = dotProduct * scale + rotation * 0.5;
-            if (Double.isNaN(finalPower)) finalPower = 0;
-            motor.setPower(finalPower);
-            telemetry.addData("Motor", i + " " + finalPower);
         }
     }
 
