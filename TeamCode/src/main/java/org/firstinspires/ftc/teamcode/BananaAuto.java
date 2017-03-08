@@ -44,11 +44,13 @@ import com.qualcomm.robotcore.util.Range;
 
 import for_camera_opmodes.LinearOpModeCamera;
 
+import static java.lang.Math.abs;
+
 /**
  * Created by Yichen Cao on 2017-02-25.
  */
 
-public class BananaAuto extends LinearOpModeCamera {
+class BananaAuto extends LinearOpModeCamera {
 
     /* Declare OpMode members. */
     private BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
@@ -61,8 +63,8 @@ public class BananaAuto extends LinearOpModeCamera {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    static final double     DRIVE_SPEED             = 0.8;     // Nominal speed for better accuracy.
-    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
+    private static final double     DRIVE_SPEED             = 0.5;     // Nominal speed for better accuracy.
+    private static final double     TURN_SPEED              = 0.3;     // Nominal half speed for better accuracy.
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -71,7 +73,8 @@ public class BananaAuto extends LinearOpModeCamera {
     private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
     private static final int ds2 = 2;
     private static final double MOVE_SPEED = 0.5;
-    private static final double ENCODER_THRESHOLD = 10;
+    private static final double ENCODER_THRESHOLD = 20;
+    private static final double COLOR_DIFF_THRESHOLD = 5000000;
 
     private static final double TURN_CM_PER_DEG = 0.62;
 
@@ -101,47 +104,60 @@ public class BananaAuto extends LinearOpModeCamera {
         robot.lightSensor.enableLed(true);
         startCamera();
 
-        driveStraight(DRIVE_SPEED, 15);
+        // START ==================================
 
-        //TODO: Uncomment
-//        performActionWithDuration(() -> {
-//            robot.motorFlicker.setPower(1.0);
-//        }, 1, "Shoot 1");
-//
-//        performActionWithDuration(() -> {
-//            robot.servoBallStopper.setPosition(0.0);
-//            robot.motorFlicker.setPower(1.0);
-//        }, 1, "Shoot 2");
+        driveStraight(DRIVE_SPEED * 0.75, 15);
 
-        turn(TURN_SPEED, red ? -135 : 54); //TODO:  figure out how many ticks is 45 deg
+        performActionWithDuration(() -> {
+            robot.motorFlicker.setPower(-1.0);
+        }, 1, "Shoot 1");
+
+        robot.motorFlicker.setPower(0.0);
+        robot.servoBallStopper.setPosition(0.0);
         sleep(500);
 
-        driveStraight(DRIVE_SPEED, red ? -100 : 100);
+        performActionWithDuration(() -> {
+            robot.motorFlicker.setPower(-1.0);
+        }, 1.3, "Shoot 2");
+
+        turn(TURN_SPEED, red ? -135 : 39); //TODO:  figure out how many ticks is 45 deg
+        sleep(500);
+
+        driveStraight(DRIVE_SPEED, red ? -100 : 121.5);
 
         if (red) {
             turn(TURN_SPEED, 45);
         } else {
 //            turn(TURN_SPEED, -54);
-            drive(DRIVE_SPEED, 0, -54 * TURN_CM_PER_DEG * 2);
+            drive(DRIVE_SPEED, 0, 66 * TURN_CM_PER_DEG);
         }
 
         sleep(500);
 
+        if (!opModeIsActive())
+            return;
+
         findWhiteLine(4);
-        pushButton();
+        pushButton(.7);
+
+        if (!opModeIsActive())
+            return;
 
         findWhiteLine(6);
-        pushButton();
+        pushButton(0);
+
+        if (!opModeIsActive())
+            return;
 
         turn(TURN_SPEED, red ? -45 : 45);
-        driveStraight(DRIVE_SPEED, red ? 48.0 : -48.0);
+        driveStraight(DRIVE_SPEED, red ? 48.0 : -140q);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
 
-    void drive(double speed, double left, double right) {
+    private void drive(double speed, double left, double right) {
         int newLeftTarget;
         int newRightTarget;
 
@@ -161,8 +177,8 @@ public class BananaAuto extends LinearOpModeCamera {
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() && (
-                            robot.motorLeft.getCurrentPosition() - newLeftTarget > ENCODER_THRESHOLD ||
-                            robot.motorRight.getCurrentPosition() - newRightTarget > ENCODER_THRESHOLD)) {
+                            abs(robot.motorLeft.getCurrentPosition() - newLeftTarget) > ENCODER_THRESHOLD ||
+                            abs(robot.motorRight.getCurrentPosition() - newRightTarget) > ENCODER_THRESHOLD)) {
                 telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
                 telemetry.addData("Actual",  "%7d:%7d",      robot.motorLeft.getCurrentPosition(),
                         robot.motorRight.getCurrentPosition());
@@ -192,24 +208,23 @@ public class BananaAuto extends LinearOpModeCamera {
             if (imageReady()) { // only do this if an image has been returned from the camera
                 int redValue = 0;
                 int blueValue = 0;
-                int greenValue = 0;
 
                 // get image, rotated so (0,0) is in the bottom left of the preview window
                 Bitmap rgbImage;
                 rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
 
-                for (int x = 0; x < rgbImage.getWidth(); x++) {
-                    for (int y = 0; y < rgbImage.getHeight(); y++) {
-                        int pixel = rgbImage.getPixel(x, y);
+                // 480 x 640
+                for (int x = 0; x < rgbImage.getWidth() - 222; x++) {
+                    for (int y = 0; y < rgbImage.getHeight() - 246; y++) {
+                        int pixel = rgbImage.getPixel(x + 80, y + 127);
                         redValue += red(pixel);
                         blueValue += blue(pixel);
-                        greenValue += green(pixel);
                     }
                 }
-                int color = highestColor(redValue, greenValue, blueValue);
 
-                redOnLeft = color == 0;
+                redOnLeft = blueValue - redValue < COLOR_DIFF_THRESHOLD;
                 finished = true;
+                telemetry.addData("B/R", blueValue + " " + redValue);
                 telemetry.addData("Color:", redOnLeft ? "RED BLUE" : "BLUE RED");
                 telemetry.update();
             } else {
@@ -220,21 +235,15 @@ public class BananaAuto extends LinearOpModeCamera {
         return redOnLeft;
     }
 
-    private void pushButton() {
+    private void pushButton(double offsetDistance) {
         boolean redOnLeft = isRedOnLeft();
-        if (red) {
-            driveStraight(DRIVE_SPEED, -5);
-        } else {
-            driveStraight(DRIVE_SPEED, 5);
-        }
-        performActionWithDuration(() -> {
-            robot.servoButtonLinearSlide.setPower(-1);
-        }, .7, "Push Button 1");
         performActionWithDuration(() -> {
             robot.servoButtonLinearSlide.setPower(-1);
             // 0 left 1 right
-            robot.servoButtonRotate.setPosition(redOnLeft && red ? 0 : 1);
-        }, 1, "Push Button 2");
+            robot.servoButtonRotate.setPosition(redOnLeft ^ red ? 0.09 : 0.94);
+        }, .9 + offsetDistance, "Push Button 2");
+        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
+        sleep(500);
         performActionWithDuration(() -> {
             robot.servoButtonLinearSlide.setPower(1);
             robot.servoButtonRotate.setPosition(0.5);
@@ -246,7 +255,10 @@ public class BananaAuto extends LinearOpModeCamera {
         runtime.reset();
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.move(MOVE_SPEED, MOVE_SPEED);
+        sleep(500);
+        robot.move(MOVE_SPEED / 2, MOVE_SPEED / 2);
+        while (opModeIsActive() && (runtime.seconds() < 2)) {
+        }
         while (opModeIsActive() && (robot.lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
@@ -257,6 +269,7 @@ public class BananaAuto extends LinearOpModeCamera {
         }
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        driveStraight(MOVE_SPEED / 3, -3);
     }
 
     interface RobotAction {

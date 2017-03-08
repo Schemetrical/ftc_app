@@ -47,6 +47,7 @@ public class BananaOp extends OpMode {
     /* Declare OpMode members. */
     BananaHardware robot = new BananaHardware();
     private ElapsedTime runtime = new ElapsedTime();
+    private boolean flipped = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -83,7 +84,7 @@ public class BananaOp extends OpMode {
     public void start() {
         robot.servoButtonRotate.setPosition(1.0);
         robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        robot.servoBallStopper.setPosition(0.0);
+        robot.servoBallStopper.setPosition(0.4);
     }
 
     /*
@@ -98,15 +99,31 @@ public class BananaOp extends OpMode {
         // rightMotor.setPower(-gamepad1.right_stick_y);
 
         // GAMEPAD 1
+
+        if (gamepad1.b) {
+            flipped = true;
+        }
+
+        if (gamepad1.a) {
+            flipped = false;
+        }
+
+        double multiplier = 1;
+        if (gamepad1.right_bumper) {
+            multiplier = 0.5;
+        }
+
         if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
             robot.rotate(gamepad1.right_trigger - gamepad1.left_trigger);
         } else {
-            robot.move(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
+            robot.move((flipped ? gamepad1.right_stick_y : -gamepad1.left_stick_y) * multiplier,
+                    (flipped ? gamepad1.left_stick_y : -gamepad1.right_stick_y) * multiplier);
         }
 
         // GAMEPAD 2
         robot.motorBallSpinner.setPower(-gamepad2.left_stick_y);
         robot.winch(-gamepad2.right_stick_y);
+
         if (gamepad2.b) {
             robot.motorFlicker.setPower(1);
         } else if (gamepad2.a) {
@@ -116,9 +133,9 @@ public class BananaOp extends OpMode {
         }
 
         if (gamepad2.right_bumper) {
-            robot.servoBallStopper.setPosition(0.4);
-        } else {
             robot.servoBallStopper.setPosition(0.0);
+        } else {
+            robot.servoBallStopper.setPosition(0.4);
         }
 
         robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + BananaHardware.STOPPING_SERVO);
