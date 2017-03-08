@@ -82,7 +82,7 @@ public class BananaOp extends OpMode {
     @Override
     public void start() {
         robot.servoButtonRotate.setPosition(1.0);
-        robot.servoButtonLinearSlide.setPower(robot.STOPPING_SERVO);
+        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
         robot.servoBallStopper.setPosition(0.0);
     }
 
@@ -121,7 +121,7 @@ public class BananaOp extends OpMode {
             robot.servoBallStopper.setPosition(0.0);
         }
 
-        robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + robot.STOPPING_SERVO);
+        robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + BananaHardware.STOPPING_SERVO);
 
         if (gamepad2.x) {
             robot.servoForkliftRelease.setPower(1.0);

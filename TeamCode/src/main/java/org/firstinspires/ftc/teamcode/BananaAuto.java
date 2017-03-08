@@ -52,17 +52,16 @@ public class BananaAuto extends LinearOpModeCamera {
 
     /* Declare OpMode members. */
     private BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
-//    HiTechnicNxtGyroSensor gyro    = null;                    // Additional Gyro device
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_CM   = 10.16 ;     // For figuring circumference
-    static final double     COUNTS_PER_CM         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    private static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    private static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+    private static final double     WHEEL_DIAMETER_CM       = 10.16 ;     // For figuring circumference
+    private static final double     COUNTS_PER_CM           = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_CM * 3.1415);
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    static final double     DRIVE_SPEED             = 0.7;     // Nominal speed for better accuracy.
+    static final double     DRIVE_SPEED             = 0.8;     // Nominal speed for better accuracy.
     static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -72,6 +71,9 @@ public class BananaAuto extends LinearOpModeCamera {
     private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
     private static final int ds2 = 2;
     private static final double MOVE_SPEED = 0.5;
+    private static final double ENCODER_THRESHOLD = 10;
+
+    private static final double TURN_CM_PER_DEG = 0.62;
 
     @Override
     public void runOpMode() {
@@ -81,24 +83,9 @@ public class BananaAuto extends LinearOpModeCamera {
          * The init() method of the hardware class does most of the work here
          */
         robot.init(hardwareMap);
-//        gyro = (HiTechnicNxtGyroSensor)hardwareMap.gyroSensor.get("gs");
 
-        // Ensure the robot it stationary, then reset the encoders and calibrate the gyro.
         robot.motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // Send telemetry message to alert driver that we are calibrating;
-//        telemetry.addData(">", "Calibrating Gyro");    //
-//        telemetry.update();
-//
-//
-//        gyro.calibrate();
-//
-//        // make sure the gyro is calibrated before continuing
-//        while (!isStopRequested() && gyro.isCalibrating())  {
-//            sleep(50);
-//            idle();
-//        }
 
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
@@ -110,23 +97,11 @@ public class BananaAuto extends LinearOpModeCamera {
 
         robot.servoButtonRotate.setPosition(0.5);
         robot.servoBallStopper.setPosition(0.4);
-        robot.servoButtonLinearSlide.setPower(robot.STOPPING_SERVO);
+        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
         robot.lightSensor.enableLed(true);
         startCamera();
 
-        // Wait for the game to start (Display Gyro value), and reset gyro before we move..
-        while (!isStarted()) {
-//            telemetry.addData(">", "Robot Heading = %d", /*gyro.getIntegratedZValue()*/);
-            telemetry.update();
-            idle();
-        }
-//        gyro.resetZAxisIntegrator();
-
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        // Put a hold after each turn
-
-        drive(DRIVE_SPEED, 5);
+        driveStraight(DRIVE_SPEED, 15);
 
         //TODO: Uncomment
 //        performActionWithDuration(() -> {
@@ -138,11 +113,18 @@ public class BananaAuto extends LinearOpModeCamera {
 //            robot.motorFlicker.setPower(1.0);
 //        }, 1, "Shoot 2");
 
-        turn(TURN_SPEED, red ? 30 : 10); //TODO:  figure out how many ticks is 45 deg
+        turn(TURN_SPEED, red ? -135 : 54); //TODO:  figure out how many ticks is 45 deg
         sleep(500);
 
-        drive(DRIVE_SPEED, red ? -40 : 40);
-        turn(TURN_SPEED, red ? 10 : -10);
+        driveStraight(DRIVE_SPEED, red ? -100 : 100);
+
+        if (red) {
+            turn(TURN_SPEED, 45);
+        } else {
+//            turn(TURN_SPEED, -54);
+            drive(DRIVE_SPEED, 0, -54 * TURN_CM_PER_DEG * 2);
+        }
+
         sleep(500);
 
         findWhiteLine(4);
@@ -151,38 +133,36 @@ public class BananaAuto extends LinearOpModeCamera {
         findWhiteLine(6);
         pushButton();
 
-        turn(TURN_SPEED, red ? -10 : 10);
-        drive(DRIVE_SPEED, red ? 48.0 : -48.0);
+        turn(TURN_SPEED, red ? -45 : 45);
+        driveStraight(DRIVE_SPEED, red ? 48.0 : -48.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
-    public void drive (double speed, double distance) {
+
+    void drive(double speed, double left, double right) {
         int newLeftTarget;
         int newRightTarget;
-        int moveCounts;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            moveCounts = (int)(distance * COUNTS_PER_CM);
-            newLeftTarget = robot.motorLeft.getCurrentPosition() + moveCounts;
-            newRightTarget = robot.motorRight.getCurrentPosition() + moveCounts;
+            newLeftTarget = robot.motorLeft.getCurrentPosition() + (int)(left * COUNTS_PER_CM);
+            newRightTarget = robot.motorRight.getCurrentPosition() + (int)(right * COUNTS_PER_CM);
 
             // Set Target and Turn On RUN_TO_POSITION
             robot.motorLeft.setTargetPosition(newLeftTarget);
             robot.motorRight.setTargetPosition(newRightTarget);
 
             // start motion.
-            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            robot.motorLeft.setPower(speed);
-            robot.motorRight.setPower(speed);
+            robot.move(speed, speed);
 
             // keep looping while we are still active, and BOTH motors are running.
-            while (opModeIsActive() &&
-                    (robot.motorLeft.isBusy() && robot.motorRight.isBusy())) {
+            while (opModeIsActive() && (
+                            robot.motorLeft.getCurrentPosition() - newLeftTarget > ENCODER_THRESHOLD ||
+                            robot.motorRight.getCurrentPosition() - newRightTarget > ENCODER_THRESHOLD)) {
                 telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
                 telemetry.addData("Actual",  "%7d:%7d",      robot.motorLeft.getCurrentPosition(),
                         robot.motorRight.getCurrentPosition());
@@ -196,42 +176,12 @@ public class BananaAuto extends LinearOpModeCamera {
         }
     }
 
-    public void turn (double speed, double angle) {
-        int newLeftTarget;
-        int newRightTarget;
-        int moveCounts;
+    private void driveStraight(double speed, double distance) {
+        drive(speed, distance, distance);
+    }
 
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            // Determine new target position, and pass to motor controller
-            moveCounts = (int)(angle * COUNTS_PER_CM);
-            newLeftTarget = robot.motorLeft.getCurrentPosition() + moveCounts;
-            newRightTarget = robot.motorRight.getCurrentPosition() - moveCounts;
-
-            // Set Target and Turn On RUN_TO_POSITION
-            robot.motorLeft.setTargetPosition(newLeftTarget);
-            robot.motorRight.setTargetPosition(newRightTarget);
-
-            // start motion.
-            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            robot.motorLeft.setPower(speed);
-            robot.motorRight.setPower(speed);
-
-            // keep looping while we are still active, and BOTH motors are running.
-            while (opModeIsActive() &&
-                    (robot.motorLeft.isBusy() && robot.motorRight.isBusy())) {
-                telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
-                telemetry.addData("Actual",  "%7d:%7d",      robot.motorLeft.getCurrentPosition(),
-                        robot.motorRight.getCurrentPosition());
-                telemetry.addData("Speed",   "%5.2f:%5.2f",  speed, speed);
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.motorLeft.setPower(0);
-            robot.motorRight.setPower(0);
-        }
+    private void turn(double speed, double angle) {
+        drive(speed, angle * TURN_CM_PER_DEG, -angle * TURN_CM_PER_DEG);
     }
 
     private boolean isRedOnLeft() {
@@ -273,22 +223,29 @@ public class BananaAuto extends LinearOpModeCamera {
     private void pushButton() {
         boolean redOnLeft = isRedOnLeft();
         if (red) {
-            drive(DRIVE_SPEED, -4);
+            driveStraight(DRIVE_SPEED, -5);
         } else {
-            drive(DRIVE_SPEED, 4);
+            driveStraight(DRIVE_SPEED, 5);
         }
         performActionWithDuration(() -> {
-            robot.servoButtonLinearSlide.setPower(1);
-        }, 1, "Push Button 1");
+            robot.servoButtonLinearSlide.setPower(-1);
+        }, .7, "Push Button 1");
         performActionWithDuration(() -> {
-            robot.servoButtonLinearSlide.setPower(1);
+            robot.servoButtonLinearSlide.setPower(-1);
             // 0 left 1 right
             robot.servoButtonRotate.setPosition(redOnLeft && red ? 0 : 1);
         }, 1, "Push Button 2");
-        robot.servoButtonLinearSlide.setPower(0);
+        performActionWithDuration(() -> {
+            robot.servoButtonLinearSlide.setPower(1);
+            robot.servoButtonRotate.setPosition(0.5);
+        }, 1, "Retract Button");
+        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
     }
 
     private void findWhiteLine(double timeout) {
+        runtime.reset();
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.move(MOVE_SPEED, MOVE_SPEED);
         while (opModeIsActive() && (robot.lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < 6.0)) {
             // Display the light level while we are looking for the line
@@ -298,6 +255,8 @@ public class BananaAuto extends LinearOpModeCamera {
         for (DcMotorSimple motor: robot.allMotors) {
             motor.setPower(0);
         }
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     interface RobotAction {
@@ -315,98 +274,4 @@ public class BananaAuto extends LinearOpModeCamera {
             motor.setPower(0);
         }
     }
-
-//    @Override
-//    public void runOpMode() {
-//
-//        /*
-//         * Initialize the drive system variables.
-//         * The init() method of the hardware class does all the work here
-//         */
-//        robot.init(hardwareMap);
-//
-//        // Send telemetry message to signify robot waiting;
-//        telemetry.addData("Status", "Ready to run");
-//        telemetry.update();
-//        startCamera();
-//
-//        robot.servoButtonRotate.setPosition(0.5);
-//        robot.lightSensor.enableLed(true);
-//
-////        double voltage = hardwareMap.voltageSensor.get("motor_controller").getVoltage();
-//
-//        // Wait for the game to start (driver presses PLAY)
-//        waitForStart();
-//
-//        // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
-//        startCamera();
-//
-//        // Step 1:  Drive forward for 1 second
-//        performActionWithDuration(() -> {
-//            robot.move(MOVE_SPEED, MOVE_SPEED);
-//        }, .5, "Drive Forward");
-//
-//        // Step 2:  Shoot
-//        performActionWithDuration(() -> {
-//            robot.motorFlicker.setPower(1.0);
-//        }, 2, "Shoot");
-//
-//        // Step 3: Turn
-//        if (red) {
-//            performActionWithDuration(() -> {
-//                robot.move(MOVE_SPEED, -MOVE_SPEED);
-//            }, .5, "Turn");
-//        } else {
-//            performActionWithDuration(() -> {
-//                robot.move(-MOVE_SPEED, MOVE_SPEED);
-//            }, .5, "Turn");
-//        }
-//
-//        // Step 4: Move until bumping wall
-//        performActionWithDuration(() -> {
-//            robot.move(MOVE_SPEED, MOVE_SPEED);
-//        }, 3, "Move until Wall");
-//
-//        // Step 5: Turn
-//        if (red) {
-//            performActionWithDuration(() -> {
-//                robot.move(-MOVE_SPEED, MOVE_SPEED);
-//            }, .5, "Turn");
-//        } else {
-//            performActionWithDuration(() -> {
-//                robot.move(MOVE_SPEED, -MOVE_SPEED);
-//            }, .5, "Turn");
-//        }
-//
-//        // Step 6: Go to white line
-//        findWhiteLine(4); // timeout is 4s
-//
-//        // Step 7: Push Button
-//        pushButton();
-//
-//        // Step 8: Go to white line
-//        findWhiteLine(6);
-//
-//        // Step 9: Push Button
-//        pushButton();
-//
-//        // Step 10: Turn
-//        performActionWithDuration(() -> {
-//            robot.servoButtonLinearSlide.setPower(-1);
-//            robot.move(red ? -MOVE_SPEED : MOVE_SPEED, red ? MOVE_SPEED : -MOVE_SPEED);
-//        }, .5, "Turn");
-//        robot.servoButtonLinearSlide.setPower(0);
-//
-//        // Step 11: Move until bumping center pole
-//        performActionWithDuration(() -> {
-//            robot.move(red ? MOVE_SPEED : -MOVE_SPEED, red ? MOVE_SPEED : -MOVE_SPEED);
-//        }, 6, "Move until Wall");
-//
-//        // Stop all driveMotors
-//        for (DcMotorSimple motor: robot.allMotors) {
-//            motor.setPower(0);
-//            robot.lightSensor.enableLed(false);
-//        }
-//    }
-
 }
