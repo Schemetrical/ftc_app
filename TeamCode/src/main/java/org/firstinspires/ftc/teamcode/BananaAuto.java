@@ -81,52 +81,29 @@ class BananaAuto extends LinearOpModeCamera {
     @Override
     public void runOpMode() {
 
-        /*
-         * Initialize the standard drive system variables.
-         * The init() method of the hardware class does most of the work here
-         */
         robot.init(hardwareMap);
-
-        robot.motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        telemetry.addData(">", "Robot Ready.");    //
-        telemetry.update();
-
-        robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        setup();
         waitForStart();
 
-        robot.servoButtonRotate.setPosition(0.5);
-        robot.servoBallStopper.setPosition(0.4);
-        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        robot.lightSensor.enableLed(true);
-        startCamera();
-
-        // START ==================================
+    // =====================
+    // AUTONOMOUS DRIVE CODE
+    // =====================
 
         driveStraight(DRIVE_SPEED * 0.75, 15);
 
-        performActionWithDuration(() -> {
-            robot.motorFlicker.setPower(-1.0);
-        }, 1, "Shoot 1");
-
-        robot.motorFlicker.setPower(0.0);
+        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 1");
         robot.servoBallStopper.setPosition(0.0);
         sleep(500);
 
-        performActionWithDuration(() -> {
-            robot.motorFlicker.setPower(-1.0);
-        }, 1.3, "Shoot 2");
+        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
 
-        turn(TURN_SPEED, red ? -135 : 39); //TODO:  figure out how many ticks is 45 deg
+        turn(TURN_SPEED, red ? -117 : 39); //TODO:  figure out how many ticks is 45 deg
         sleep(500);
 
         driveStraight(DRIVE_SPEED, red ? -100 : 121.5);
 
         if (red) {
-            turn(TURN_SPEED, 45);
+            drive(DRIVE_SPEED, 0, -66 * TURN_CM_PER_DEG);
         } else {
 //            turn(TURN_SPEED, -54);
             drive(DRIVE_SPEED, 0, 66 * TURN_CM_PER_DEG);
@@ -143,19 +120,49 @@ class BananaAuto extends LinearOpModeCamera {
         if (!opModeIsActive())
             return;
 
-        findWhiteLine(6);
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sleep(500);
+
+        performActionWithDuration(() -> robot.move(
+                red ? -MOVE_SPEED / 2 : MOVE_SPEED / 2,
+                red ? -MOVE_SPEED / 2 : MOVE_SPEED / 2),
+                2, "Move without detect line");
+
+        findWhiteLine(4);
         pushButton(0);
 
         if (!opModeIsActive())
             return;
 
         turn(TURN_SPEED, red ? -45 : 45);
-        driveStraight(DRIVE_SPEED, red ? 48.0 : -140q);
+        driveStraight(DRIVE_SPEED, red ? 48.0 : -140);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
+
+    // ========================
+    // FUNCTIONS FOR AUTONOMOUS
+    // ========================
+
+    private void setup() {
+        robot.motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.servoButtonRotate.setPosition(0.5);
+        robot.servoBallStopper.setPosition(0.4);
+        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
+        robot.lightSensor.enableLed(true);
+        startCamera();
+
+        telemetry.addData("Status", "Robot Ready");
+        telemetry.update();
+    }
 
     private void drive(double speed, double left, double right) {
         int newLeftTarget;
@@ -256,9 +263,7 @@ class BananaAuto extends LinearOpModeCamera {
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(500);
-        robot.move(MOVE_SPEED / 2, MOVE_SPEED / 2);
-        while (opModeIsActive() && (runtime.seconds() < 2)) {
-        }
+        robot.move(red ? -MOVE_SPEED / 2 : MOVE_SPEED / 2, red ? -MOVE_SPEED / 2 : MOVE_SPEED / 2);
         while (opModeIsActive() && (robot.lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());

@@ -65,8 +65,7 @@ public class BananaOp extends OpMode {
 
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        orientationManager = new OrientationManager(hardwareMap, telemetry);
-//        orientationManager.start();
+
         runtime.reset();
     }
 
