@@ -247,7 +247,7 @@ public class BananaAuto extends LinearOpModeCamera {
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.move(MOVE_SPEED, MOVE_SPEED);
-        while (opModeIsActive() && (robot.lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < 6.0)) {
+        while (opModeIsActive() && (robot.lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
             telemetry.update();
