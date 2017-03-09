@@ -32,7 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.SensorManager;
 
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtGyroSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
@@ -86,6 +89,9 @@ class BananaAuto extends LinearOpModeCamera {
         setup();
         waitForStart();
 
+        OrientationManager orientationManager = new OrientationManager();
+        orientationManager.start(hardwareMap);
+
     // =====================
     // AUTONOMOUS DRIVE CODE
     // =====================
@@ -102,7 +108,7 @@ class BananaAuto extends LinearOpModeCamera {
             performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
         }
 //        sleep(500);
-/*
+
         if (red) {
             driveStraight(DRIVE_SPEED * 0.75, 41.4);
         }
@@ -151,7 +157,7 @@ class BananaAuto extends LinearOpModeCamera {
 
         turn(TURN_SPEED, red ? -45 : 45);
         driveStraight(DRIVE_SPEED, red ? 48.0 : -140);
-*/
+
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
