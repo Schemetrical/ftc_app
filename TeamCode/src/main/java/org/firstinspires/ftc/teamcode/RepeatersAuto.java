@@ -35,7 +35,7 @@ public class RepeatersAuto extends LinearOpModeCamera {
         // Wait for game start (driver press PLAY)
         waitForStart();
 
-        // Step 1:  Drive forward to aim
+        /* Step 1:  Drive forward to aim
             robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
         runtime.reset();
@@ -43,24 +43,24 @@ public class RepeatersAuto extends LinearOpModeCamera {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
-        // Step 2:  Shoot
+        */
+        // Step 1:  Shoot
             robot.rightMotor.setPower(0);
             robot.leftMotor.setPower(0);
             robot.flickerMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2)) {
-            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 3:  Drive forward to park on center vortex
+        // Step 2:  Drive forward to park on center vortex
             robot.flickerMotor.setPower(0);
             robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
-            telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 2.5)) {
+            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
     }
