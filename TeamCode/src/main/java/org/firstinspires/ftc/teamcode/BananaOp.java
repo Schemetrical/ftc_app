@@ -81,7 +81,7 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void start() {
-        robot.servoButtonRotate.setPosition(1.0);
+        robot.servoButtonRotate.setPosition(0.94);
         robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
         robot.servoBallStopper.setPosition(0.4);
     }
@@ -91,6 +91,7 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void loop() {
+        robot.servoButtonRotate.setPosition(0.94);
         telemetry.addData("Status", "Running: " + runtime.toString());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
@@ -110,9 +111,15 @@ public class BananaOp extends OpMode {
         double multiplier = 1;
         if (gamepad1.right_bumper) {
             multiplier = 0.5;
+        } else if (gamepad1.left_bumper) {
+            multiplier = 0.25;
         }
 
-        if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
+        if (gamepad1.dpad_up) {
+            robot.move(flipped ? -1 : 1, flipped ? -1 : 1);
+        } else if (gamepad1.dpad_down) {
+            robot.move(flipped ? 1 : -1, flipped ? 1 : -1);
+        } else if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
             robot.rotate(gamepad1.right_trigger - gamepad1.left_trigger);
         } else {
             robot.move((flipped ? gamepad1.right_stick_y : -gamepad1.left_stick_y) * multiplier,
@@ -137,8 +144,6 @@ public class BananaOp extends OpMode {
             robot.servoBallStopper.setPosition(0.4);
         }
 
-        robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + BananaHardware.STOPPING_SERVO);
-
         if (gamepad2.x) {
             robot.servoForkliftRelease.setPower(1.0);
         } else if (gamepad2.y) {
@@ -147,6 +152,13 @@ public class BananaOp extends OpMode {
             robot.servoForkliftRelease.setPower(0);
         }
 
+        if (gamepad2.dpad_up) {
+            robot.servoButtonLinearSlide.setPower(-1);
+        } else if (gamepad2.dpad_down) {
+            robot.servoButtonLinearSlide.setPower(1);
+        } else {
+            robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
+        }
     }
 
     /*

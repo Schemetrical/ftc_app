@@ -32,17 +32,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import for_camera_opmodes.LinearOpModeCamera;
 
 /**
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@Autonomous(name="Banana Autonomous Blue No Shoot", group="Banana Test")
-public class BananaAutoBlueNS extends BananaAuto {
-    @Override
-    public void runOpMode() {
-        shooting = false;
-        super.runOpMode();
-    }
+@Autonomous(name="Bananauto Blue Beacon", group="Banana")
+public class BananaAutoBlueBeacon extends BananaAuto {
+
 }

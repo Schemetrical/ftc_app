@@ -32,18 +32,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.hardware.SensorManager;
 
-import com.qualcomm.hardware.hitechnic.HiTechnicNxtGyroSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import for_camera_opmodes.LinearOpModeCamera;
 
@@ -73,6 +66,8 @@ class BananaAuto extends LinearOpModeCamera {
 
     boolean red = false;
     boolean shooting = true;
+    boolean pushingBall = false;
+    boolean ramp = false;
 
     private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
     private static final int ds2 = 2;
@@ -89,12 +84,52 @@ class BananaAuto extends LinearOpModeCamera {
         setup();
         waitForStart();
 
-        OrientationManager orientationManager = new OrientationManager();
-        orientationManager.start(hardwareMap);
-
     // =====================
     // AUTONOMOUS DRIVE CODE
     // =====================
+
+
+
+        telemetry.addData("Path", "Complete");
+        telemetry.update();
+        if (ramp) {
+            runRamp();
+        } else if (pushingBall) {
+            runBall();
+        } else {
+            runBeacon();
+        }
+    }
+
+    private void runRamp() {
+        driveStraight(DRIVE_SPEED * 2, 10);
+        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 1");
+        robot.servoBallStopper.setPosition(0.0);
+        sleep(500);
+
+        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
+
+        driveStraight(DRIVE_SPEED * 2, 30);
+        turn(DRIVE_SPEED * 2, 50);
+        driveStraight(DRIVE_SPEED * 2, 40);
+        turn(DRIVE_SPEED * 2, 70);
+        driveStraight(DRIVE_SPEED * 2, 60);
+    }
+
+    private void runBall() {
+        driveStraight(DRIVE_SPEED, 25);
+
+        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 1");
+        robot.servoBallStopper.setPosition(0.0);
+        sleep(500);
+
+        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
+
+        driveStraight(DRIVE_SPEED * 2, 120);
+    }
+
+
+    private void runBeacon() {
 
         if (!red) {
             driveStraight(DRIVE_SPEED * 0.75, 15);
@@ -157,11 +192,7 @@ class BananaAuto extends LinearOpModeCamera {
 
         turn(TURN_SPEED, red ? -45 : 45);
         driveStraight(DRIVE_SPEED, red ? 48.0 : -140);
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
     }
-
 
     // ========================
     // FUNCTIONS FOR AUTONOMOUS
@@ -266,7 +297,7 @@ class BananaAuto extends LinearOpModeCamera {
         boolean redOnLeft = isRedOnLeft();
         performActionWithDuration(() -> {
             robot.servoButtonLinearSlide.setPower(-1);
-            // 0 left 1 right
+            // 0 right 1 left
             robot.servoButtonRotate.setPosition(redOnLeft ^ red ? 0.09 : 0.94);
         }, .9 + offsetDistance, "Push Button 2");
         robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);

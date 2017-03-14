@@ -44,7 +44,11 @@ import for_camera_opmodes.LinearOpModeCamera;
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@Autonomous(name="Banana Autonomous Blue", group="Banana")
-public class BananaAutoBlue extends BananaAuto {
-
+@Autonomous(name="Bananauto Red Beacon", group="Banana")
+public class BananaAutoRedBeacon extends BananaAuto {
+    @Override
+    public void runOpMode() {
+        red = true;
+        super.runOpMode();
+    }
 }
