@@ -19,7 +19,7 @@ public class RepeatersHardware {
 
     public void init(HardwareMap ahwMap) {
 
-        //define and initialize driveMotors
+        // define and initialize driveMotors
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
@@ -38,5 +38,18 @@ public class RepeatersHardware {
         }
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
 
+    }
+
+    void move(double left, double right) {
+        leftMotor.setPower(left);
+        rightMotor.setPower(right);
+    }
+
+    void beacon(boolean moveDown) {
+        if (moveDown) {
+            beaconServo.setPosition(0.94);
+        } else {
+            beaconServo.setPosition(0.52);
+        }
     }
 }

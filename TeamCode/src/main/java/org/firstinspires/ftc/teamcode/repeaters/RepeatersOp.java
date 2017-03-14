@@ -13,21 +13,18 @@ public class RepeatersOp extends OpMode
     private RepeatersHardware robot = new RepeatersHardware();
     private ElapsedTime runtime = new ElapsedTime();
 
-    boolean beaconDown;
+    // State variables for beacon
+    private boolean gamepad2pressed;
+    private boolean beaconUp;
 
      //Code to run ONCE when the driver hits INIT
 
     @Override
     public void init() {
-        telemetry.addData("Status", "Initialized");
-
+        runtime.reset();
         robot.init(hardwareMap);
 
-        runtime.reset();
-        // telemetry.addData("Status", "Initialized");
-
-        beaconDown = false;
-
+        telemetry.addData("Status", "Initialized");
     }
 
     /*
@@ -45,7 +42,9 @@ public class RepeatersOp extends OpMode
 
         runtime.reset();
 
-        beaconDown = false;
+        // Setup beacon servo variables, and move it to raised position
+        gamepad2pressed = false;
+        beaconUp = true;
         robot.beaconServo.setPosition(0.52);
     }
 
@@ -55,28 +54,24 @@ public class RepeatersOp extends OpMode
     @Override
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
+        telemetry.update();
 
+        //driver1 drives the robot and rotates robot, driver2 collects - elevates - and shoots balls
+
+        // GAMEPAD 1
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-        if (gamepad1.left_trigger > 0 || gamepad1.right_trigger > 0) {
-            // function to turn robot 180 degree
-            robot.leftMotor.setPower(-gamepad1.left_trigger + gamepad1.right_trigger);
-            robot.rightMotor.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
-        }   else if (gamepad1.dpad_up) {
-            robot.leftMotor.setPower(1);
-            robot.rightMotor.setPower(1);
-        }   else if (gamepad1.dpad_down) {
-            robot.leftMotor.setPower(-1);
-            robot.rightMotor.setPower(-1);
-        }   else {
-            robot.leftMotor.setPower(-gamepad1.left_stick_y);
-            robot.rightMotor.setPower(-gamepad1.right_stick_y);
+        if (gamepad1.left_trigger > 0 || gamepad1.right_trigger > 0) { // Trigger turn robot
+            robot.move(-gamepad1.left_trigger + gamepad1.right_trigger
+                      , gamepad1.left_trigger - gamepad1.right_trigger);
+        }   else if (gamepad1.dpad_up) { // All forward
+            robot.move(1, 1);
+        }   else if (gamepad1.dpad_down) { // All backward
+            robot.move(-1, -1);
+        }   else { // Set to joystick control
+            robot.move(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
         }
 
-
-        robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
-        robot.elevatorMotor.setPower(-gamepad2.left_stick_y);
-
-
+        // Ball Flicker; gamepad1 x and y
         if (gamepad1.x) {
             robot.flickerMotor.setPower(1);
         } else if (gamepad1.y) {
@@ -85,17 +80,20 @@ public class RepeatersOp extends OpMode
             robot.flickerMotor.setPower(0);
         }
 
-        if (gamepad2.x) {
-            if (beaconDown) {
-                robot.beaconServo.setPosition(0.94);
-            } else {
-                robot.beaconServo.setPosition(0.52);
+
+        //GAMEPAD 2
+        robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+        robot.elevatorMotor.setPower(-gamepad2.left_stick_y);
+
+        if (gamepad2.x) { // Switch like behavior for gampad2.x for beacon pusher
+            if (!gamepad2pressed) {
+                robot.beacon(beaconUp); // If is beacon up, move it down
+                beaconUp = !beaconUp;
             }
+        } else { // Once is depressed, reset variable
+            gamepad2pressed = false;
         }
 
-
-
-        //driver1 drives the robot and rotates robot, driver2 collects - elevates - and shoots balls
     }
 
     /*
@@ -106,6 +104,7 @@ public class RepeatersOp extends OpMode
         for (DcMotor motor: robot.motors) {
             motor.setPower(0);
         }
+        robot.beacon(false); // Sets beacon to up position
     }
 
 }
