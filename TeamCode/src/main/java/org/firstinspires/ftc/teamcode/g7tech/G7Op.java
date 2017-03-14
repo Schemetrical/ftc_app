@@ -30,7 +30,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.g7tech;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,14 +38,21 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.atan;
+import static java.lang.Math.cos;
+import static java.lang.Math.pow;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+
 /**
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@TeleOp(name="Banana Teleop", group="Banana")  // @Autonomous(...) is the other common choice
-public class BananaOp extends OpMode {
+@TeleOp(name="G7 Teleop", group="G7Tech")  // @Autonomous(...) is the other common choice
+public class G7Op extends OpMode {
     /* Declare OpMode members. */
-    BananaHardware robot = new BananaHardware();
+    G7Hardware robot = new G7Hardware();
     private ElapsedTime runtime = new ElapsedTime();
     private boolean flipped = false;
 
@@ -81,9 +88,6 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void start() {
-        robot.servoButtonRotate.setPosition(1.0);
-        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        robot.servoBallStopper.setPosition(0.4);
     }
 
     /*
@@ -99,54 +103,19 @@ public class BananaOp extends OpMode {
 
         // GAMEPAD 1
 
-        if (gamepad1.b) {
-            flipped = true;
-        }
-
-        if (gamepad1.a) {
-            flipped = false;
-        }
-
-        double multiplier = 1;
-        if (gamepad1.right_bumper) {
-            multiplier = 0.5;
-        }
-
-        if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
-            robot.rotate(gamepad1.right_trigger - gamepad1.left_trigger);
+        double direction;
+        if (gamepad1.left_stick_x == 0) {
+            direction = PI/2 * (-gamepad1.left_stick_y > 0 ? 1 : -1);
         } else {
-            robot.move((flipped ? gamepad1.right_stick_y : -gamepad1.left_stick_y) * multiplier,
-                    (flipped ? gamepad1.left_stick_y : -gamepad1.right_stick_y) * multiplier);
+            direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
+            if (gamepad1.left_stick_x < 0) direction += PI;
         }
+        // pythagorean
+        double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
+
+        robot.move(direction, power, -gamepad1.right_stick_x);
 
         // GAMEPAD 2
-        robot.motorBallSpinner.setPower(-gamepad2.left_stick_y);
-        robot.winch(-gamepad2.right_stick_y);
-
-        if (gamepad2.b) {
-            robot.motorFlicker.setPower(1);
-        } else if (gamepad2.a) {
-            robot.motorFlicker.setPower(-1);
-        } else {
-            robot.motorFlicker.setPower(0);
-        }
-
-        if (gamepad2.right_bumper) {
-            robot.servoBallStopper.setPosition(0.0);
-        } else {
-            robot.servoBallStopper.setPosition(0.4);
-        }
-
-        robot.servoButtonLinearSlide.setPower(gamepad2.right_trigger - gamepad2.left_trigger + BananaHardware.STOPPING_SERVO);
-
-        if (gamepad2.x) {
-            robot.servoForkliftRelease.setPower(1.0);
-        } else if (gamepad2.y) {
-            robot.servoForkliftRelease.setPower(-1.0);
-        } else {
-            robot.servoForkliftRelease.setPower(0);
-        }
-
     }
 
     /*

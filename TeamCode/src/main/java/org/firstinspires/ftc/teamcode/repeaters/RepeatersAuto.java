@@ -1,9 +1,6 @@
-package org.firstinspires.ftc.teamcode;
-import android.graphics.Bitmap;
+package org.firstinspires.ftc.teamcode.repeaters;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import for_camera_opmodes.LinearOpModeCamera;

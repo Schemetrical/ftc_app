@@ -30,7 +30,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.banana;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -38,11 +38,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@Autonomous(name="Banana Autonomous Blue No Shoot", group="Banana Test")
-public class BananaAutoBlueNS extends BananaAuto {
+@Autonomous(name="Bananauto Red Beacon", group="Banana")
+public class BananaAutoRedBeacon extends BananaAuto {
     @Override
     public void runOpMode() {
-        shooting = false;
+        red = true;
         super.runOpMode();
     }
 }
