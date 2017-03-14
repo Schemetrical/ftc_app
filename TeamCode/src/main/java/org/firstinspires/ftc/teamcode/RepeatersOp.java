@@ -13,6 +13,8 @@ public class RepeatersOp extends OpMode
     private RepeatersHardware robot = new RepeatersHardware();
     private ElapsedTime runtime = new ElapsedTime();
 
+    boolean beaconDown;
+
      //Code to run ONCE when the driver hits INIT
 
     @Override
@@ -23,6 +25,8 @@ public class RepeatersOp extends OpMode
 
         runtime.reset();
         // telemetry.addData("Status", "Initialized");
+
+        beaconDown = false;
 
     }
 
@@ -38,7 +42,11 @@ public class RepeatersOp extends OpMode
      */
     @Override
     public void start() {
+
         runtime.reset();
+
+        beaconDown = false;
+        robot.beaconServo.setPosition(0.52);
     }
 
     /*
@@ -68,6 +76,7 @@ public class RepeatersOp extends OpMode
         robot.collectorMotor.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
         robot.elevatorMotor.setPower(-gamepad2.left_stick_y);
 
+
         if (gamepad1.x) {
             robot.flickerMotor.setPower(1);
         } else if (gamepad1.y) {
@@ -75,6 +84,15 @@ public class RepeatersOp extends OpMode
         } else {
             robot.flickerMotor.setPower(0);
         }
+
+        if (gamepad2.x) {
+            if (beaconDown) {
+                robot.beaconServo.setPosition(0.94);
+            } else {
+                robot.beaconServo.setPosition(0.52);
+            }
+        }
+
 
 
         //driver1 drives the robot and rotates robot, driver2 collects - elevates - and shoots balls

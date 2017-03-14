@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 /**
  * Created by micro on 26-Feb-17.
@@ -12,6 +13,8 @@ public class RepeatersHardware {
     DcMotor elevatorMotor;
     DcMotor flickerMotor;
 
+    Servo beaconServo;
+
     DcMotor[] motors;
 
     public void init(HardwareMap ahwMap) {
@@ -22,6 +25,10 @@ public class RepeatersHardware {
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
         elevatorMotor = ahwMap.dcMotor.get("elevatorMotor");
         flickerMotor = ahwMap.dcMotor.get("flickerMotor");
+
+        // define servos
+        beaconServo = ahwMap.servo.get("beaconServo");
+
 
         motors = new DcMotor[]{leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
 
