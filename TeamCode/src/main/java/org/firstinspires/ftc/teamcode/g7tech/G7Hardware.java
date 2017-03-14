@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.g7tech;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 /**
  * Created by Yichen Cao on 2017-02-25.
@@ -54,15 +57,32 @@ class G7Hardware {
         }
     }
 
-    void move(double left, double right) {
-        motorLeft.setPower(left);
-        motorRight.setPower(right);
-    }
 
-    // clockwise rotation = positive power
-    void rotate(double power) {
-        motorLeft.setPower(power);
-        motorRight.setPower(-power);
+    void move(double direction, double power, double rotation) {
+        // case 1: only rotation, rotate at full power
+        if (power == 0) {
+            for (DcMotorSimple motor: driveMotors) {
+                motor.setPower(rotation);
+            }
+            return;
+        }
+
+        // case 2/3: there is lateral movement, so calculate that. If there is rotation, average the two.
+        double scale = rotation == 0 ? 1 : 0.5;
+
+        double x = power * cos(direction);
+        double y = power * sin(direction);
+
+        for (int i = 0; i < driveMotors.length; i++) {
+            DcMotorSimple motor = driveMotors[i];
+            double motorX = MOTOR_XY[2*i];
+            double motorY = MOTOR_XY[2*i+1];
+            // some dot product magic
+            double dotProduct = x * motorX + y * motorY;
+            double finalPower = dotProduct * scale + rotation * 0.5;
+            if (Double.isNaN(finalPower)) finalPower = 0;
+            motor.setPower(finalPower);
+        }
     }
 }
 
