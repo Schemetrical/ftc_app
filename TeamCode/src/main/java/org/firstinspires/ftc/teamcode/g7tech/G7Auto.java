@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.g7tech;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.repeaters.RepeatersHardware;
@@ -28,6 +29,18 @@ public class G7Auto extends LinearOpModeCamera {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+
+        robot.compassSensor.setMode(CompassSensor.CompassMode.CALIBRATION_MODE);
+        while (!robot.compassSensor.calibrationFailed() && (runtime.seconds() < 2)) {
+            telemetry.addData("Calibrating", "%2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        if (robot.compassSensor.calibrationFailed()) {
+            telemetry.addData("Calibration", "Failed");
+            telemetry.update();
+        }
+        robot.compassSensor.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //

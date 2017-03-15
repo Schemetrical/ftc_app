@@ -34,15 +34,13 @@ package org.firstinspires.ftc.teamcode.g7tech;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.atan;
-import static java.lang.Math.cos;
 import static java.lang.Math.pow;
-import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
 /**
@@ -52,9 +50,10 @@ import static java.lang.Math.sqrt;
 @TeleOp(name="G7 Teleop", group="G7Tech")  // @Autonomous(...) is the other common choice
 public class G7Op extends OpMode {
     /* Declare OpMode members. */
-    G7Hardware robot = new G7Hardware();
+    private G7Hardware robot = new G7Hardware();
     private ElapsedTime runtime = new ElapsedTime();
-    private boolean flipped = false;
+    private double offset = 0;
+    private boolean relative = true;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -70,10 +69,7 @@ public class G7Op extends OpMode {
 
         robot.init(hardwareMap);
 
-        robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        runtime.reset();
+        robot.compassSensor.setMode(CompassSensor.CompassMode.CALIBRATION_MODE);
     }
 
     /*
@@ -81,6 +77,8 @@ public class G7Op extends OpMode {
      */
     @Override
     public void init_loop() {
+        telemetry.addData("Calibrating", "%2.5f S, Failed: %b", runtime.seconds(), robot.compassSensor.calibrationFailed());
+        telemetry.update();
     }
 
     /*
@@ -88,6 +86,8 @@ public class G7Op extends OpMode {
      */
     @Override
     public void start() {
+        robot.compassSensor.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
+        offset = getDirection();
     }
 
     /*
@@ -97,11 +97,14 @@ public class G7Op extends OpMode {
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
 
-        // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-        // leftMotor.setPower(-gamepad1.left_stick_y);
-        // rightMotor.setPower(-gamepad1.right_stick_y);
-
         // GAMEPAD 1
+
+        if (gamepad1.b) {
+            relative = false;
+        } else if (gamepad1.a) {
+            relative = true;
+            offset = getDirection();
+        }
 
         double direction;
         if (gamepad1.left_stick_x == 0) {
@@ -110,6 +113,11 @@ public class G7Op extends OpMode {
             direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
             if (gamepad1.left_stick_x < 0) direction += PI;
         }
+
+        if (relative) {
+            direction += (getDirection() - offset);
+        }
+
         // pythagorean
         double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
 
@@ -126,6 +134,10 @@ public class G7Op extends OpMode {
         for (DcMotorSimple motor: robot.allMotors) {
             motor.setPower(0);
         }
+    }
+
+    private double getDirection() {
+        return robot.compassSensor.getDirection() * PI / 180;
     }
 
 }

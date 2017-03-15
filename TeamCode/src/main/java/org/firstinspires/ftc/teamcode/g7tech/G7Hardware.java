@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.g7tech;
 
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtCompassSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,6 +22,12 @@ class G7Hardware {
 
     DcMotorSimple[] driveMotors;
     DcMotorSimple[] allMotors;
+
+    CRServo servoButtonLinearSlide;
+    Servo servoButtonRotate;
+
+    HiTechnicNxtCompassSensor compassSensor;
+    LightSensor lightSensorNear, lightSensorFar;
 
     static final double[] MOTOR_XY = {1, 0, 0, 1, 0, -1, -1, 0};
 
@@ -50,6 +57,13 @@ class G7Hardware {
                 motorRight,
                 motorBack
         };
+
+        compassSensor = (HiTechnicNxtCompassSensor)ahwMap.compassSensor.get("cs");
+        servoButtonLinearSlide = ahwMap.crservo.get("sbls");
+        servoButtonRotate = ahwMap.servo.get("sbr");
+
+        lightSensorNear = ahwMap.lightSensor.get("lsn");
+        lightSensorFar = ahwMap.lightSensor.get("lsf");
 
         // Set all motors to zero power
         for (DcMotorSimple motor: allMotors) {
