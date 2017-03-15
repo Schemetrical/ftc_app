@@ -128,7 +128,6 @@ public class BananaOp extends OpMode {
 
         // GAMEPAD 2
         robot.motorBallSpinner.setPower(-gamepad2.left_stick_y);
-        robot.winch(-gamepad2.right_stick_y);
 
         if (gamepad2.b) {
             robot.motorFlicker.setPower(1);
@@ -142,14 +141,6 @@ public class BananaOp extends OpMode {
             robot.servoBallStopper.setPosition(0.0);
         } else {
             robot.servoBallStopper.setPosition(0.4);
-        }
-
-        if (gamepad2.x) {
-            robot.servoForkliftRelease.setPower(1.0);
-        } else if (gamepad2.y) {
-            robot.servoForkliftRelease.setPower(-1.0);
-        } else {
-            robot.servoForkliftRelease.setPower(0);
         }
 
         if (gamepad2.dpad_up) {

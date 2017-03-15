@@ -17,17 +17,15 @@ class BananaHardware {
     /* Public OpMode members. */
     /* Declare OpMode members. */
     DcMotor motorLeft, motorRight;
-    private DcMotorSimple motorLinearSlideWinchLeft, motorLinearSlideWinchRight;
 
     DcMotorSimple motorFlicker;
     DcMotorSimple motorBallSpinner;
 
     CRServo servoButtonLinearSlide;
     Servo servoButtonRotate;
-    CRServo servoForkliftRelease;
     Servo servoBallStopper;
 
-    LightSensor lightSensor;
+    LightSensor lightSensorNear, lightSensorFar;
 
     DcMotorSimple[] allMotors;
 
@@ -45,8 +43,6 @@ class BananaHardware {
         motorRight = ahwMap.dcMotor.get("mr");
 
         motorFlicker = ahwMap.dcMotor.get("mf");
-        motorLinearSlideWinchLeft = ahwMap.dcMotor.get("mlswl");
-        motorLinearSlideWinchRight = ahwMap.dcMotor.get("mlswr");
         motorBallSpinner = ahwMap.dcMotor.get("mbs");
 
 //        motorLinearSlideWinchLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -57,13 +53,11 @@ class BananaHardware {
                 motorLeft,
                 motorRight,
                 motorFlicker,
-                motorLinearSlideWinchLeft,
-                motorLinearSlideWinchRight,
                 motorBallSpinner};
 
-        lightSensor = ahwMap.lightSensor.get("ls");
+        lightSensorNear = ahwMap.lightSensor.get("lsn");
+        lightSensorFar = ahwMap.lightSensor.get("lsf");
 
-        servoForkliftRelease = ahwMap.crservo.get("sflr");
         servoButtonLinearSlide = ahwMap.crservo.get("sbls");
         servoButtonRotate = ahwMap.servo.get("sbr");
         servoBallStopper = ahwMap.servo.get("sbs");
@@ -72,11 +66,6 @@ class BananaHardware {
         for (DcMotorSimple motor: allMotors) {
             motor.setPower(0);
         }
-    }
-
-    void winch(double power) {
-        motorLinearSlideWinchLeft.setPower(power);
-        motorLinearSlideWinchRight.setPower(power);
     }
 
     void move(double left, double right) {

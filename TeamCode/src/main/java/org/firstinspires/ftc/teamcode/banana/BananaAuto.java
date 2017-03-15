@@ -208,7 +208,8 @@ class BananaAuto extends LinearOpModeCamera {
         robot.servoButtonRotate.setPosition(0.5);
         robot.servoBallStopper.setPosition(0.4);
         robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        robot.lightSensor.enableLed(true);
+        robot.lightSensorNear.enableLed(true);
+        robot.lightSensorFar.enableLed(true);
         startCamera();
 
         telemetry.addData("Status", "Robot Ready");
@@ -315,9 +316,15 @@ class BananaAuto extends LinearOpModeCamera {
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(500);
         robot.move(red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75, red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75);
-        while (opModeIsActive() && (robot.lightSensor.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
+        while (opModeIsActive() && (robot.lightSensorNear.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
-            telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
+            telemetry.addData("Light Level Near: ",  robot.lightSensorNear.getLightDetected());
+            telemetry.update();
+        }
+        robot.move(red ? 0 : MOVE_SPEED * 0.75, red ? -MOVE_SPEED * 0.75 : 0);
+        while (opModeIsActive() && (robot.lightSensorFar.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout + 1)) {
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level Far: ",  robot.lightSensorFar.getLightDetected());
             telemetry.update();
         }
         for (DcMotorSimple motor: robot.allMotors) {
