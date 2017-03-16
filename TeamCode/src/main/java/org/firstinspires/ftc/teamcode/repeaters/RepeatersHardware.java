@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.repeaters;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 /**
  * Created by micro on 26-Feb-17.
@@ -12,16 +13,22 @@ public class RepeatersHardware {
     DcMotor elevatorMotor;
     DcMotor flickerMotor;
 
+    Servo beaconServo;
+
     DcMotor[] motors;
 
     public void init(HardwareMap ahwMap) {
 
-        //define and initialize driveMotors
+        // define and initialize driveMotors
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
         elevatorMotor = ahwMap.dcMotor.get("elevatorMotor");
         flickerMotor = ahwMap.dcMotor.get("flickerMotor");
+
+        // define servos
+        beaconServo = ahwMap.servo.get("beaconServo");
+
 
         motors = new DcMotor[]{leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
 
@@ -31,5 +38,18 @@ public class RepeatersHardware {
         }
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
 
+    }
+
+    void move(double left, double right) {
+        leftMotor.setPower(left);
+        rightMotor.setPower(right);
+    }
+
+    void beacon(boolean moveDown) {
+        if (moveDown) {
+            beaconServo.setPosition(0.94);
+        } else {
+            beaconServo.setPosition(0.52);
+        }
     }
 }
