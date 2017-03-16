@@ -52,24 +52,24 @@ class BananaAuto extends LinearOpModeCamera {
     private BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
 
     private static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    private static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+    private static final double     DRIVE_GEAR_REDUCTION    = 0.5 ;     // This is < 1.0 if geared UP
     private static final double     WHEEL_DIAMETER_CM       = 10.16 ;     // For figuring circumference
     private static final double     COUNTS_PER_CM           = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_CM * 3.1415);
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    private static final double     DRIVE_SPEED             = 0.4;     // Nominal speed for better accuracy.
+    private static final double     DRIVE_SPEED             = 0.2;     // Nominal speed for better accuracy.
     private static final double     TURN_SPEED              = 0.2;     // Nominal half speed for better accuracy.
 
     private ElapsedTime runtime = new ElapsedTime();
 
     boolean red = false;
-    boolean shooting = true;
+    boolean shooting = false;
     boolean pushingBall = false;
     boolean ramp = false;
 
-    private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
+    private static final double     WHITE_THRESHOLD = 0.4;  // spans between 0.1 - 0.5 from dark to light
     private static final int ds2 = 2;
     private static final double MOVE_SPEED = 0.5;
     private static final double ENCODER_THRESHOLD = 8;
@@ -149,20 +149,20 @@ class BananaAuto extends LinearOpModeCamera {
         }
 
         // FIRST TURN =======================
-//        turn(TURN_SPEED, red ? -117 : 37); // 38.5 at 13.32V
+//        turn(TURN_SPEED, red ? -117 : 37);
         if (red) {
 //            turn(TURN_SPEED, 100);
         } else {
-            drive(DRIVE_SPEED, 70 * TURN_CM_PER_DEG, 0); // 65 at 13.82 V
+            drive(DRIVE_SPEED, 105 * TURN_CM_PER_DEG, 0);
         }
 
-        driveStraight(DRIVE_SPEED, red ? -149 : 106); // 120 at 13.82V
+        driveStraight(DRIVE_SPEED, red ? -149 : 100);
 
         if (red) {
             turn(TURN_SPEED, 54);
         } else {
 //            turn(TURN_SPEED, -54);
-            drive(DRIVE_SPEED, 0, 74 * TURN_CM_PER_DEG); // 65 at 13.82 V
+            drive(DRIVE_SPEED, 0, 111 * TURN_CM_PER_DEG);
         }
 
 //        sleep(500);
@@ -182,7 +182,7 @@ class BananaAuto extends LinearOpModeCamera {
         if (!opModeIsActive())
             return;
 
-        driveStraight(MOVE_SPEED * 1.25, red ? -100 : 100);
+        driveStraight(MOVE_SPEED * 1.25, red ? -80 : 80);
 
         findWhiteLine(4);
         pushButton(0);
@@ -315,7 +315,7 @@ class BananaAuto extends LinearOpModeCamera {
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(500);
-        robot.move(red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75, red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75);
+        robot.move(red ? -MOVE_SPEED * .5 : MOVE_SPEED * .5, red ? -MOVE_SPEED * .5 : MOVE_SPEED * 0.75);
         while (opModeIsActive() && (robot.lightSensorNear.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level Near: ",  robot.lightSensorNear.getLightDetected());
@@ -332,7 +332,7 @@ class BananaAuto extends LinearOpModeCamera {
         }
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        driveStraight(MOVE_SPEED / 3, red ? -1.5 : 1.5);
+        driveStraight(MOVE_SPEED / 3, red ? 1.5 : -1.5);
     }
 
     interface RobotAction {
