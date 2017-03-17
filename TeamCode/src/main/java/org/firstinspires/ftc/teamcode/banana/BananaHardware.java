@@ -46,7 +46,7 @@ class BananaHardware {
         motorBallSpinner = ahwMap.dcMotor.get("mbs");
 
 //        motorLinearSlideWinchLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFlicker.setDirection(DcMotorSimple.Direction.REVERSE);
 
         allMotors = new DcMotorSimple[]{

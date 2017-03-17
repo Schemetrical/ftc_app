@@ -69,7 +69,7 @@ public class G7Op extends OpMode {
 
         robot.init(hardwareMap);
 
-        robot.compassSensor.setMode(CompassSensor.CompassMode.CALIBRATION_MODE);
+//        robot.compassSensor.setMode(CompassSensor.CompassMode.CALIBRATION_MODE);
     }
 
     /*
@@ -77,8 +77,9 @@ public class G7Op extends OpMode {
      */
     @Override
     public void init_loop() {
+        /*
         telemetry.addData("Calibrating", "%2.5f S, Failed: %b", runtime.seconds(), robot.compassSensor.calibrationFailed());
-        telemetry.update();
+        telemetry.update();*/
     }
 
     /*
@@ -86,8 +87,10 @@ public class G7Op extends OpMode {
      */
     @Override
     public void start() {
+        /*
         robot.compassSensor.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
-        offset = getDirection();
+        offset = getDirection();*/
+        robot.servoButtonRotate.setPosition(0.94);
     }
 
     /*
@@ -99,12 +102,13 @@ public class G7Op extends OpMode {
 
         // GAMEPAD 1
 
+        /*
         if (gamepad1.b) {
             relative = false;
         } else if (gamepad1.a) {
             relative = true;
             offset = getDirection();
-        }
+        }*/
 
         double direction;
         if (gamepad1.left_stick_x == 0) {
@@ -113,10 +117,10 @@ public class G7Op extends OpMode {
             direction = atan(-gamepad1.left_stick_y/gamepad1.left_stick_x);
             if (gamepad1.left_stick_x < 0) direction += PI;
         }
-
+/*
         if (relative) {
             direction += (getDirection() - offset);
-        }
+        }*/
 
         // pythagorean
         double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
@@ -124,6 +128,13 @@ public class G7Op extends OpMode {
         robot.move(direction, power, -gamepad1.right_stick_x);
 
         // GAMEPAD 2
+        if (gamepad2.dpad_up) {
+            robot.servoButtonLinearSlide.setPower(-1);
+        } else if (gamepad2.dpad_down) {
+            robot.servoButtonLinearSlide.setPower(1);
+        } else {
+            robot.servoButtonLinearSlide.setPower(0);
+        }
     }
 
     /*
@@ -135,9 +146,9 @@ public class G7Op extends OpMode {
             motor.setPower(0);
         }
     }
-
+/*
     private double getDirection() {
         return robot.compassSensor.getDirection() * PI / 180;
     }
-
+*/
 }

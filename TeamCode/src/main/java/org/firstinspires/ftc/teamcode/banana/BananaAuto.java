@@ -59,7 +59,7 @@ class BananaAuto extends LinearOpModeCamera {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    private static final double     DRIVE_SPEED             = 0.2;     // Nominal speed for better accuracy.
+    private static final double     DRIVE_SPEED             = 0.4;     // Nominal speed for better accuracy.
     private static final double     TURN_SPEED              = 0.2;     // Nominal half speed for better accuracy.
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -149,20 +149,20 @@ class BananaAuto extends LinearOpModeCamera {
         }
 
         // FIRST TURN =======================
-//        turn(TURN_SPEED, red ? -117 : 37);
+//        turn(TURN_SPEED, red ? -117 : 37); // 38.5 at 13.32V
         if (red) {
 //            turn(TURN_SPEED, 100);
         } else {
-            drive(DRIVE_SPEED, 105 * TURN_CM_PER_DEG, 0);
+            drive(DRIVE_SPEED, 70 * TURN_CM_PER_DEG, 0); // 65 at 13.82 V
         }
 
-        driveStraight(DRIVE_SPEED, red ? -149 : 100);
+        driveStraight(DRIVE_SPEED, red ? -149 : 106); // 120 at 13.82V
 
         if (red) {
             turn(TURN_SPEED, 54);
         } else {
 //            turn(TURN_SPEED, -54);
-            drive(DRIVE_SPEED, 0, 111 * TURN_CM_PER_DEG);
+            drive(DRIVE_SPEED, 0, 74 * TURN_CM_PER_DEG); // 65 at 13.82 V
         }
 
 //        sleep(500);
@@ -182,7 +182,7 @@ class BananaAuto extends LinearOpModeCamera {
         if (!opModeIsActive())
             return;
 
-        driveStraight(MOVE_SPEED * 1.25, red ? -80 : 80);
+        driveStraight(MOVE_SPEED * 1.25, red ? -100 : 100);
 
         findWhiteLine(4);
         pushButton(0);
@@ -315,7 +315,7 @@ class BananaAuto extends LinearOpModeCamera {
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(500);
-        robot.move(red ? -MOVE_SPEED * .5 : MOVE_SPEED * .5, red ? -MOVE_SPEED * .5 : MOVE_SPEED * 0.75);
+        robot.move(red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75, red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75);
         while (opModeIsActive() && (robot.lightSensorNear.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level Near: ",  robot.lightSensorNear.getLightDetected());

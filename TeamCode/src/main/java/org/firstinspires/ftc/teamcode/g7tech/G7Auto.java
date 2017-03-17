@@ -30,6 +30,7 @@ public class G7Auto extends LinearOpModeCamera {
          */
         robot.init(hardwareMap);
 
+        /*
         robot.compassSensor.setMode(CompassSensor.CompassMode.CALIBRATION_MODE);
         while (!robot.compassSensor.calibrationFailed() && (runtime.seconds() < 2)) {
             telemetry.addData("Calibrating", "%2.5f S Elapsed", runtime.seconds());
@@ -39,7 +40,7 @@ public class G7Auto extends LinearOpModeCamera {
             telemetry.addData("Calibration", "Failed");
             telemetry.update();
         }
-        robot.compassSensor.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
+        robot.compassSensor.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);*/
 
 
         // Send telemetry message to signify robot waiting;

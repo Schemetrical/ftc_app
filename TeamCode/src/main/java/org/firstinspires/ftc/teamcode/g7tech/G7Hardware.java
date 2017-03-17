@@ -26,8 +26,8 @@ class G7Hardware {
     CRServo servoButtonLinearSlide;
     Servo servoButtonRotate;
 
-    HiTechnicNxtCompassSensor compassSensor;
-    LightSensor lightSensorNear, lightSensorFar;
+//    HiTechnicNxtCompassSensor compassSensor;
+//    LightSensor lightSensorNear, lightSensorFar;
 
     static final double[] MOTOR_XY = {1, 0, 0, 1, 0, -1, -1, 0};
 
@@ -58,12 +58,12 @@ class G7Hardware {
                 motorBack
         };
 
-        compassSensor = (HiTechnicNxtCompassSensor)ahwMap.compassSensor.get("cs");
+//        compassSensor = (HiTechnicNxtCompassSensor)ahwMap.compassSensor.get("cs");
         servoButtonLinearSlide = ahwMap.crservo.get("sbls");
         servoButtonRotate = ahwMap.servo.get("sbr");
-
-        lightSensorNear = ahwMap.lightSensor.get("lsn");
-        lightSensorFar = ahwMap.lightSensor.get("lsf");
+//
+//        lightSensorNear = ahwMap.lightSensor.get("lsn");
+//        lightSensorFar = ahwMap.lightSensor.get("lsf");
 
         // Set all motors to zero power
         for (DcMotorSimple motor: allMotors) {
