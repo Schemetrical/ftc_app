@@ -25,7 +25,7 @@ class BananaHardware {
     Servo servoButtonRotate;
     Servo servoBallStopper;
 
-    LightSensor lightSensorNear, lightSensorFar;
+    LightSensor lightSensor;
 
     DcMotorSimple[] allMotors;
 
@@ -47,7 +47,7 @@ class BananaHardware {
 
 //        motorLinearSlideWinchLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorFlicker.setDirection(DcMotorSimple.Direction.REVERSE);
+//        motorFlicker.setDirection(DcMotorSimple.Direction.REVERSE);
 
         allMotors = new DcMotorSimple[]{
                 motorLeft,
@@ -55,8 +55,7 @@ class BananaHardware {
                 motorFlicker,
                 motorBallSpinner};
 
-        lightSensorNear = ahwMap.lightSensor.get("lsn");
-        lightSensorFar = ahwMap.lightSensor.get("lsf");
+        lightSensor = ahwMap.lightSensor.get("ls");
 
         servoButtonLinearSlide = ahwMap.crservo.get("sbls");
         servoButtonRotate = ahwMap.servo.get("sbr");

@@ -34,7 +34,6 @@ package org.firstinspires.ftc.teamcode.g7tech;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -110,6 +109,8 @@ public class G7Op extends OpMode {
             offset = getDirection();
         }*/
 
+
+
         double direction;
         if (gamepad1.left_stick_x == 0) {
             direction = PI/2 * (-gamepad1.left_stick_y > 0 ? 1 : -1);
@@ -125,7 +126,7 @@ public class G7Op extends OpMode {
         // pythagorean
         double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
 
-        robot.move(direction, power, -gamepad1.right_stick_x);
+        robot.move(direction, power, gamepad1.right_stick_x);
 
         // GAMEPAD 2
         if (gamepad2.dpad_up) {

@@ -52,10 +52,14 @@ class BananaAuto extends LinearOpModeCamera {
     private BananaHardware robot   = new BananaHardware();   // Use a Pushbot's hardware
 
     private static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    private static final double     DRIVE_GEAR_REDUCTION    = 0.5 ;     // This is < 1.0 if geared UP
+    private static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
     private static final double     WHEEL_DIAMETER_CM       = 10.16 ;     // For figuring circumference
     private static final double     COUNTS_PER_CM           = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_CM * 3.1415);
+
+    public enum Color {
+        RED, BLUE, UNSURE
+    }
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
@@ -69,13 +73,14 @@ class BananaAuto extends LinearOpModeCamera {
     boolean pushingBall = false;
     boolean ramp = false;
 
-    private static final double     WHITE_THRESHOLD = 0.4;  // spans between 0.1 - 0.5 from dark to light
+    private static final double     WHITE_THRESHOLD = 0.1;  // spans between 0.1 - 0.5 from dark to light
     private static final int ds2 = 2;
-    private static final double MOVE_SPEED = 0.5;
-    private static final double ENCODER_THRESHOLD = 8;
-    private static final double COLOR_DIFF_THRESHOLD = 5000000;
+    private static final double ENCODER_THRESHOLD = 10;
+    private static final double COLOR_DIFF_THRESHOLD = 10000000;
 
     private static final double TURN_CM_PER_DEG = 0.62;
+
+    double initialLightIntensity = 0.2;
 
     @Override
     public void runOpMode() {
@@ -88,8 +93,6 @@ class BananaAuto extends LinearOpModeCamera {
     // AUTONOMOUS DRIVE CODE
     // =====================
 
-
-
         telemetry.addData("Path", "Complete");
         telemetry.update();
         if (ramp) {
@@ -99,99 +102,82 @@ class BananaAuto extends LinearOpModeCamera {
         } else {
             runBeacon();
         }
+
+        cleanup();
     }
 
     private void runRamp() {
-        driveStraight(DRIVE_SPEED * 2, 10);
-        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 1");
-        robot.servoBallStopper.setPosition(0.0);
-        sleep(500);
+        if (red) {
+            driveStraight(DRIVE_SPEED * 2, 10);
+        } else {
+            driveStraight(DRIVE_SPEED * 2, 10);
+            shoot();
 
-        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
-
-        driveStraight(DRIVE_SPEED * 2, 30);
-        turn(DRIVE_SPEED * 2, 50);
-        driveStraight(DRIVE_SPEED * 2, 40);
-        turn(DRIVE_SPEED * 2, 70);
-        driveStraight(DRIVE_SPEED * 2, 60);
+            driveStraight(DRIVE_SPEED * 2, 30);
+            turn(DRIVE_SPEED * 2, 50);
+            driveStraight(DRIVE_SPEED * 2, 40);
+            turn(DRIVE_SPEED * 2, 70);
+            driveStraight(DRIVE_SPEED * 2, 60);
+        }
     }
 
     private void runBall() {
-        driveStraight(DRIVE_SPEED, 25);
-
-        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 1");
-        robot.servoBallStopper.setPosition(0.0);
-        sleep(500);
-
-        performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
-
+        if (red) {
+            driveStraight(DRIVE_SPEED, 35);
+        } else {
+            driveStraight(DRIVE_SPEED, 25); // blue 25
+        }
+        shoot();
         driveStraight(DRIVE_SPEED * 2, 120);
+        cleanup();
     }
 
 
     private void runBeacon() {
 
-        if (!red) {
+        if (red) {
+            shoot();
+            driveStraight(DRIVE_SPEED * 0.75, 20);
+
+// RED  =======================
+            drive(DRIVE_SPEED, 0, 32);
+
+            driveStraight(DRIVE_SPEED, red ? -149 : 130); // 106
+            findWhiteLine(8);
+
+            turn(TURN_SPEED, red ? -37 : 48);
+        } else {
             driveStraight(DRIVE_SPEED * 0.75, 15);
+            shoot();
+
+// BLUE =======================
+            drive(DRIVE_SPEED, 33, 0);
+
+            driveStraight(DRIVE_SPEED, 130); // 106
+            findWhiteLine(8);
+
+            turn(TURN_SPEED, 48);
         }
 
-        if (shooting) {
-            performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 1");
-            robot.servoBallStopper.setPosition(0.0);
-            sleep(500);
 
-            performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1.3, "Shoot 2");
-        }
-//        sleep(500);
+// BEACON 1 =======================
+        pushButton();
 
-        if (red) {
-            driveStraight(DRIVE_SPEED * 0.75, 41.4);
-        }
+        turn(DRIVE_SPEED, -90);
 
-        // FIRST TURN =======================
-//        turn(TURN_SPEED, red ? -117 : 37); // 38.5 at 13.32V
-        if (red) {
-//            turn(TURN_SPEED, 100);
-        } else {
-            drive(DRIVE_SPEED, 70 * TURN_CM_PER_DEG, 0); // 65 at 13.82 V
-        }
+// BEACON 2 =======================
+        driveStraight(DRIVE_SPEED, red ? -149 : 120);
+        findWhiteLine(8);
 
-        driveStraight(DRIVE_SPEED, red ? -149 : 106); // 120 at 13.82V
+        turn(DRIVE_SPEED, 90);
 
-        if (red) {
-            turn(TURN_SPEED, 54);
-        } else {
-//            turn(TURN_SPEED, -54);
-            drive(DRIVE_SPEED, 0, 74 * TURN_CM_PER_DEG); // 65 at 13.82 V
-        }
+        pushButton();
 
-//        sleep(500);
+/*
+        turn(TURN_SPEED, red ? -45 : 30);
+        driveStraight(DRIVE_SPEED, red ? 48.0 : -140);*/
 
-        if (!opModeIsActive())
-            return;
-
-        findWhiteLine(4);
-//        if (red) {
-//            drive(DRIVE_SPEED, 0, -66 * TURN_CM_PER_DEG);
-//        } else {
-////            turn(TURN_SPEED, -54);
-//            drive(DRIVE_SPEED, -22 * TURN_CM_PER_DEG, -5 * TURN_CM_PER_DEG); // 65 at 13.82 V
-//        }
-        pushButton(.7);
-
-        if (!opModeIsActive())
-            return;
-
-        driveStraight(MOVE_SPEED * 1.25, red ? -100 : 100);
-
-        findWhiteLine(4);
-        pushButton(0);
-
-        if (!opModeIsActive())
-            return;
-
-        turn(TURN_SPEED, red ? -45 : 45);
-        driveStraight(DRIVE_SPEED, red ? 48.0 : -140);
+        cleanup();
     }
 
     // ========================
@@ -208,12 +194,23 @@ class BananaAuto extends LinearOpModeCamera {
         robot.servoButtonRotate.setPosition(0.5);
         robot.servoBallStopper.setPosition(0.4);
         robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        robot.lightSensorNear.enableLed(true);
-        robot.lightSensorFar.enableLed(true);
+        robot.lightSensor.enableLed(true);
+        sleep(500);
+        initialLightIntensity = robot.lightSensor.getLightDetected();
         startCamera();
 
-        telemetry.addData("Status", "Robot Ready");
+        telemetry.addData("Status", "Robot Ready, Initial Light: " + initialLightIntensity);
         telemetry.update();
+    }
+
+    private void shoot() {
+        if (shooting) {
+            performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), .7, "Shoot 1");
+            robot.servoBallStopper.setPosition(0.0);
+            sleep(500);
+
+            performActionWithDuration(() -> robot.motorFlicker.setPower(-1.0), 1, "Shoot 2");
+        }
     }
 
     private void drive(double speed, double left, double right) {
@@ -259,9 +256,9 @@ class BananaAuto extends LinearOpModeCamera {
         drive(speed, angle * TURN_CM_PER_DEG, -angle * TURN_CM_PER_DEG);
     }
 
-    private boolean isRedOnLeft() {
+    private Color getColor() {
         boolean finished = false;
-        boolean redOnLeft = false;
+        Color detectedColor = Color.UNSURE;
 
         while (opModeIsActive() && !finished) {
             if (imageReady()) { // only do this if an image has been returned from the camera
@@ -273,58 +270,68 @@ class BananaAuto extends LinearOpModeCamera {
                 rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
 
                 // 480 x 640
-                for (int x = 0; x < rgbImage.getWidth() - 222; x++) {
-                    for (int y = 0; y < rgbImage.getHeight() - 246; y++) {
-                        int pixel = rgbImage.getPixel(x + 80, y + 127);
+                for (int x = 0; x < rgbImage.getWidth(); x++) {
+                    for (int y = 0; y < rgbImage.getHeight(); y++) {
+                        int pixel = rgbImage.getPixel(x, y);
                         redValue += red(pixel);
                         blueValue += blue(pixel);
                     }
                 }
 
-                redOnLeft = blueValue - redValue < COLOR_DIFF_THRESHOLD;
+                if (abs(blueValue - redValue) > COLOR_DIFF_THRESHOLD) {
+                    detectedColor = blueValue > redValue ? Color.BLUE : Color.RED;
+                }
                 finished = true;
                 telemetry.addData("B/R", blueValue + " " + redValue);
-                telemetry.addData("Color:", redOnLeft ? "RED BLUE" : "BLUE RED");
+                telemetry.addData("Color:", detectedColor);
                 telemetry.update();
             } else {
                 telemetry.addData("Color:", "Getting");
                 telemetry.update();
             }
         }
-        return redOnLeft;
+        return detectedColor;
     }
 
-    private void pushButton(double offsetDistance) {
-        boolean redOnLeft = isRedOnLeft();
+    private void pushButton() {
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        ramSequence();
+
+
+        Color color = getColor();
+
+        while ((color == Color.UNSURE || ((color == Color.RED) ^ red)) && opModeIsActive()) {
+            sleep(500);
+            ramSequence();
+            sleep(1000);
+            color = getColor();
+        }
+        robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    private void ramSequence() {
         performActionWithDuration(() -> {
-            robot.servoButtonLinearSlide.setPower(-1);
-            // 0 right 1 left
-            robot.servoButtonRotate.setPosition(redOnLeft ^ red ? 0.09 : 0.94);
-        }, .9 + offsetDistance, "Push Button 2");
-        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-//        sleep(500);
+            robot.move(DRIVE_SPEED / 2, DRIVE_SPEED / 2);
+        }, 1.5, "Initial Ram");
+
         performActionWithDuration(() -> {
-            robot.servoButtonLinearSlide.setPower(1);
-            robot.servoButtonRotate.setPosition(0.5);
-        }, 1.2, "Retract Button");
-        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
+            robot.move(-DRIVE_SPEED, -DRIVE_SPEED);
+        }, .5, "Initial Unram");
     }
 
     private void findWhiteLine(double timeout) {
+
         runtime.reset();
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(500);
-        robot.move(red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75, red ? -MOVE_SPEED * 0.75 : MOVE_SPEED * 0.75);
-        while (opModeIsActive() && (robot.lightSensorNear.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
+        robot.move(red ? -DRIVE_SPEED * 0.25 : DRIVE_SPEED * 0.25, red ? -DRIVE_SPEED * 0.25 : DRIVE_SPEED * 0.25);
+        while (opModeIsActive() && (robot.lightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
-            telemetry.addData("Light Level Near: ",  robot.lightSensorNear.getLightDetected());
-            telemetry.update();
-        }
-        robot.move(red ? 0 : MOVE_SPEED * 0.75, red ? -MOVE_SPEED * 0.75 : 0);
-        while (opModeIsActive() && (robot.lightSensorFar.getLightDetected() < WHITE_THRESHOLD) && (runtime.seconds() < timeout + 1)) {
-            // Display the light level while we are looking for the line
-            telemetry.addData("Light Level Far: ",  robot.lightSensorFar.getLightDetected());
+            telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
             telemetry.update();
         }
         for (DcMotorSimple motor: robot.allMotors) {
@@ -332,7 +339,12 @@ class BananaAuto extends LinearOpModeCamera {
         }
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        driveStraight(MOVE_SPEED / 3, red ? 1.5 : -1.5);
+    }
+
+    private void cleanup() {
+        for (DcMotorSimple motor: robot.allMotors) {
+            motor.setPower(0);
+        }
     }
 
     interface RobotAction {
