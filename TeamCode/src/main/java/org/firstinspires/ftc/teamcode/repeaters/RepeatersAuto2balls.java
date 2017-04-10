@@ -31,8 +31,9 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
 
         // Wait for game start (driver press PLAY)
         waitForStart();
-
-        /* Step 1:  Drive forward to aim
+        // Step 0:  time delay
+        sleep(15000);
+        // Step 1:  Drive forward to aim
             robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
         runtime.reset();
@@ -40,14 +41,13 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        */
         // Step 1:  Shoot
         robot.rightMotor.setPower(0);
         robot.leftMotor.setPower(0);
         robot.flickerMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2)) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
@@ -56,7 +56,7 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
         robot.elevatorMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 3)) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
@@ -65,7 +65,7 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
         robot.flickerMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2)) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 4: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
@@ -75,7 +75,7 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
         robot.leftMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2.5)) {
-            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
     }
