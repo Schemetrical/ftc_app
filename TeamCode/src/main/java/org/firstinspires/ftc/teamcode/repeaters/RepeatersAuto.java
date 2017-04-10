@@ -57,7 +57,7 @@ public class RepeatersAuto extends LinearOpModeCamera {
             robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2.5)) {
+        while (opModeIsActive() && (runtime.seconds() < 2)) {
             telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }

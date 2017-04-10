@@ -74,7 +74,7 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
         robot.rightMotor.setPower(-1);
         robot.leftMotor.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2.5)) {
+        while (opModeIsActive() && (runtime.seconds() < 2)) {
             telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
