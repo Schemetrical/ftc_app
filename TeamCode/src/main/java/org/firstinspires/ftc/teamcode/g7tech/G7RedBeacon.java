@@ -30,15 +30,20 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.banana;
+package org.firstinspires.ftc.teamcode.g7tech;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 
 /**
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@Autonomous(name="Banana B Beacon", group="Banana")
-public class BananaAutoBlueBeacon extends BananaAuto {
-
+@Autonomous(name="G7 R Beacon", group="G7Tech")
+public class G7RedBeacon extends G7Auto {
+    @Override
+    public void runOpMode() {
+        red = true;
+        super.runOpMode();
+    }
 }

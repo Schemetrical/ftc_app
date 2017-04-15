@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@Autonomous(name="Bananauto Red Ball", group="Banana")
+@Autonomous(name="Banana R Ball", group="Banana")
 public class BananaAutoRedBall extends BananaAuto {
     @Override
     public void runOpMode() {

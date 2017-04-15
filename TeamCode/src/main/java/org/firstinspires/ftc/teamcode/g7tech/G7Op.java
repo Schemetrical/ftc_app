@@ -89,7 +89,6 @@ public class G7Op extends OpMode {
         /*
         robot.compassSensor.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
         offset = getDirection();*/
-        robot.servoButtonRotate.setPosition(0.94);
     }
 
     /*
@@ -123,19 +122,24 @@ public class G7Op extends OpMode {
             direction += (getDirection() - offset);
         }*/
 
-        // pythagorean
-        double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
 
-        robot.move(direction, power, gamepad1.right_stick_x);
-
-        // GAMEPAD 2
-        if (gamepad2.dpad_up) {
-            robot.servoButtonLinearSlide.setPower(-1);
-        } else if (gamepad2.dpad_down) {
-            robot.servoButtonLinearSlide.setPower(1);
+        if (gamepad1.dpad_right) {
+            robot.move(0, 0.8, gamepad1.right_stick_x);
+        } else if (gamepad1.dpad_up) {
+            robot.move(PI/2, 0.8, gamepad1.right_stick_x);
+        } else if (gamepad1.dpad_left) {
+            robot.move(PI, 0.8, gamepad1.right_stick_x);
+        } else if (gamepad1.dpad_down) {
+            robot.move(-PI/2, 0.8, gamepad1.right_stick_x);
         } else {
-            robot.servoButtonLinearSlide.setPower(0);
+            // pythagorean
+            double power = sqrt(pow(gamepad1.left_stick_y, 2) + pow(gamepad1.left_stick_x, 2));
+            robot.move(direction, power, gamepad1.right_stick_x);
         }
+        telemetry.addData("Direction", direction);
+
+        robot.motorCatapultLeft.setPower(gamepad2.left_stick_y * 0.5);
+        robot.motorCatapultRight.setPower(gamepad2.right_stick_y * 0.5);
     }
 
     /*

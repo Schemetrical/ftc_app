@@ -191,12 +191,10 @@ class BananaAuto extends LinearOpModeCamera {
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        robot.servoButtonRotate.setPosition(0.5);
         robot.servoBallStopper.setPosition(0.4);
-        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        robot.lightSensor.enableLed(true);
-        sleep(500);
-        initialLightIntensity = robot.lightSensor.getLightDetected();
+//        robot.lightSensor.enableLed(true);
+//        sleep(500);
+//        initialLightIntensity = robot.lightSensor.getLightDetected();
         startCamera();
 
         telemetry.addData("Status", "Robot Ready, Initial Light: " + initialLightIntensity);
@@ -298,8 +296,6 @@ class BananaAuto extends LinearOpModeCamera {
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         ramSequence();
-
-
         Color color = getColor();
 
         while ((color == Color.UNSURE || ((color == Color.RED) ^ red)) && opModeIsActive()) {
@@ -315,11 +311,11 @@ class BananaAuto extends LinearOpModeCamera {
     private void ramSequence() {
         performActionWithDuration(() -> {
             robot.move(DRIVE_SPEED / 2, DRIVE_SPEED / 2);
-        }, 1.5, "Initial Ram");
+        }, 1.5, "Ram");
 
         performActionWithDuration(() -> {
             robot.move(-DRIVE_SPEED, -DRIVE_SPEED);
-        }, .5, "Initial Unram");
+        }, .5, "Unram");
     }
 
     private void findWhiteLine(double timeout) {

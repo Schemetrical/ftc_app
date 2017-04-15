@@ -66,6 +66,11 @@ public class BananaOp extends OpMode {
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        robot.motorWinchRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        robot.servoSlideReleaseLeft.setPosition(0.5);
+        robot.servoSlideReleaseRight.setPosition(0.5);
+
         runtime.reset();
     }
 
@@ -81,8 +86,6 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void start() {
-        robot.servoButtonRotate.setPosition(0.94);
-        robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
         robot.servoBallStopper.setPosition(0.4);
     }
 
@@ -91,7 +94,6 @@ public class BananaOp extends OpMode {
      */
     @Override
     public void loop() {
-        robot.servoButtonRotate.setPosition(0.94);
         telemetry.addData("Status", "Running: " + runtime.toString());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
@@ -137,19 +139,21 @@ public class BananaOp extends OpMode {
             robot.motorFlicker.setPower(0);
         }
 
+        if (gamepad2.x) {
+            robot.servoSlideReleaseLeft.setPosition(0.05);
+            robot.servoSlideReleaseRight.setPosition(0.95);
+        } else if (gamepad2.y) {
+            robot.servoSlideReleaseLeft.setPosition(0.5);
+            robot.servoSlideReleaseRight.setPosition(0.5);
+        }
+
         if (gamepad2.right_bumper) {
             robot.servoBallStopper.setPosition(0.0);
         } else {
             robot.servoBallStopper.setPosition(0.4);
         }
 
-        if (gamepad2.dpad_up) {
-            robot.servoButtonLinearSlide.setPower(-1);
-        } else if (gamepad2.dpad_down) {
-            robot.servoButtonLinearSlide.setPower(1);
-        } else {
-            robot.servoButtonLinearSlide.setPower(BananaHardware.STOPPING_SERVO);
-        }
+        robot.winch(gamepad2.right_stick_y);
     }
 
     /*
