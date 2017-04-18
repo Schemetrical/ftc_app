@@ -89,6 +89,7 @@ public class RepeatersOp extends OpMode
             if (!gamepad2pressed) {
                 robot.beacon(beaconUp); // If is beacon up, move it down
                 beaconUp = !beaconUp;
+                gamepad2pressed = true;
             }
         } else { // Once is depressed, reset variable
             gamepad2pressed = false;

@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by Yichen Cao on 2017-02-25.
  */
 
-@Autonomous(name="Bananauto Blue Beacon", group="Banana")
+@Autonomous(name="Bananauto Blue Beacon", group="Repeaters")
 public class BananaAutoBlueBeacon extends BananaAuto {
 
 }

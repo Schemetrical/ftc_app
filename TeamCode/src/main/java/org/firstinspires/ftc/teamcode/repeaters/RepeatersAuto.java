@@ -9,7 +9,7 @@ import for_camera_opmodes.LinearOpModeCamera;
  * Created by micro on 26-Feb-17.
  */
 
-@Autonomous(name="Repeaters Autonomous", group="Repeater")
+@Autonomous(name="Repeaters Autonomous", group="Repeaters")
 public class RepeatersAuto extends LinearOpModeCamera {
 
     /* Declare OpMode members. */

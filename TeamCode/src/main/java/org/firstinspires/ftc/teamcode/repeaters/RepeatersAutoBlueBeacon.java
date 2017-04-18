@@ -1,17 +1,19 @@
 package org.firstinspires.ftc.teamcode.repeaters;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import for_camera_opmodes.LinearOpModeCamera;
 
 /**
- * Created by micro on 26-Feb-17.
+ * Created by MichaelL on 4/18/17.
  */
 
-@Autonomous(name="Repeaters Autonomous 2balls", group="Repeaters")
-public class RepeatersAuto2balls extends LinearOpModeCamera {
-
+@Autonomous(name="Repeaters Teleop", group="Repeaters")
+public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
     /* Declare OpMode members. */
     private RepeatersHardware robot = new RepeatersHardware();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
@@ -31,52 +33,44 @@ public class RepeatersAuto2balls extends LinearOpModeCamera {
 
         // Wait for game start (driver press PLAY)
         waitForStart();
-        // Step 0:  time delay
-        sleep(15000);
-        // Step 1:  Drive forward to aim
-            robot.rightMotor.setPower(-1);
-            robot.leftMotor.setPower(-1);
+
+        // Step 1: use leftmotor rotate robot right (30deg?) align with cornervortex
+        robot.rightMotor.setPower(0);
+        robot.leftMotor.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
+        while (opModeIsActive() && (runtime.seconds() <0.25)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        // Step 1:  Shoot
-        robot.rightMotor.setPower(0);
-        robot.leftMotor.setPower(0);
-        robot.flickerMotor.setPower(-1);
+        // Step 2:  Drive forward
+        robot.rightMotor.setPower(1);
+        robot.leftMotor.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2)) {
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
             telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
-        // Step 2:  Start elevator to load second ball
-        robot.flickerMotor.setPower(0);
-        robot.elevatorMotor.setPower(-1);
+        // Step 3:  use rightmotor rotate robot left (30deg?) align with playingfieldwall
+        robot.rightMotor.setPower(1);
+        robot.leftMotor.setPower(0);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 3)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.25)) {
             telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 3:  Shoot second ball
-        robot.elevatorMotor.setPower(0);
-        robot.flickerMotor.setPower(-1);
+        // Step 4:  Drive forward to search for white line
+        robot.flickerMotor.setPower(0);
+        robot.rightMotor.setPower(-1);
+        robot.leftMotor.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2)) {
             telemetry.addData("Path", "Leg 4: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 4:  Drive forward to park on center vortex
-        robot.flickerMotor.setPower(0);
-        robot.rightMotor.setPower(-1);
-        robot.leftMotor.setPower(-1);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2)) {
-            telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
+        // Step 5: Press beacon
+        // Step 6: Move onto the next one
     }
 }
+
