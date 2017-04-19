@@ -124,10 +124,6 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
             telemetry.update();
         }
         /*/
-        for (DcMotorSimple motor: robot.allMotors) {
-            motor.setPower(0);
-        }
-    }
     private void pushButton() {
 
             ramSequence();
