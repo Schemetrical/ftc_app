@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.repeaters;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Repeaters Teleop", group="Repeaters")  // @Autonomous(...) is the other common choice
@@ -94,6 +95,13 @@ public class RepeatersOp extends OpMode
         } else { // Once is depressed, reset variable
             gamepad2pressed = false;
         }
+        //backup for linearslide
+        if (gamepad2.b) {
+            robot.beaconServo.setDirection(Servo.Direction.FORWARD);
+        }   else if (gamepad2.a) {
+            robot.beaconServo.setDirection(Servo.Direction.REVERSE);
+        }
+
 
     }
 
