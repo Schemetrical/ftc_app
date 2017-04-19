@@ -20,8 +20,10 @@ public class RepeatersHardware {
 
     DcMotor[] motors;
     DcMotorSimple[] allMotors;
+
     //    HiTechnicNxtCompassSensor compassSensor;
-    LightSensor lightSensor;
+    LightSensor leftlightSensor;
+    LightSensor rightlightSensor;
 
     public void init(HardwareMap ahwMap) {
 
@@ -50,6 +52,7 @@ public class RepeatersHardware {
                 elevatorMotor,
                 flickerMotor,
         };
+
     }
 
     void move(double left, double right) {

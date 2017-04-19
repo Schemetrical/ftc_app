@@ -47,10 +47,11 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
          */
         robot.init(hardwareMap);
 
-        robot.lightSensor.enableLed(true);
+        robot.leftlightSensor.enableLed(true);
+        robot.rightlightSensor.enableLed(true);
         sleep(500);
-        initialLightIntensity = robot.lightSensor.getLightDetected();
-
+        initialLightIntensity = robot.leftlightSensor.getLightDetected();
+        initialLightIntensity = robot.rightlightSensor.getLightDetected();
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -71,7 +72,7 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         robot.rightMotor.setPower(1);
         robot.leftMotor.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.25)) {
             telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -86,22 +87,43 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
 
         // Step 4:  Drive forward to search for white line and press beacon
         findWhiteLine(3);
-
+        pushButton();
         // Step 5: Driver forward again -repeat
-        findWhiteLine(3);
+        findWhiteLine(7);
+        pushButton();
 
         // Step 6:
     }
     private void findWhiteLine(double timeout) {
         runtime.reset();
         sleep(500);
-        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        while (opModeIsActive() && ((robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) || (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD)) && (runtime.seconds() < timeout)) {
+            if (robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
+                robot.leftMotor.setPower(1);
+            } else {
+                robot.leftMotor.setPower(0);
+            }
+            if (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
+                robot.rightMotor.setPower(1);
+            } else {
+                robot.rightMotor.setPower(0);
+            }
+            telemetry.addData("Light Level: ", robot.leftlightSensor.getLightDetected());
+            telemetry.update();
+            telemetry.addData("Light Level: ", robot.rightlightSensor.getLightDetected());
+            telemetry.update();
+        }
+        for (DcMotorSimple motor : robot.allMotors) {
+            motor.setPower(0);
+        }
+        /*/robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         while (opModeIsActive() && (robot.lightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
             telemetry.update();
         }
+        /*/
         for (DcMotorSimple motor: robot.allMotors) {
             motor.setPower(0);
         }
