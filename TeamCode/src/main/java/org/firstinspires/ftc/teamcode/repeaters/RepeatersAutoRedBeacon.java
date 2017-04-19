@@ -3,14 +3,10 @@ package org.firstinspires.ftc.teamcode.repeaters;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.g7tech.G7Auto;
 
 import for_camera_opmodes.LinearOpModeCamera;
 
@@ -22,7 +18,7 @@ import static java.lang.Math.abs;
  */
 
 @Autonomous(name="Repeaters Autonomous", group="Repeaters")
-public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
+public class RepeatersAutoRedBeacon extends LinearOpModeCamera{
 
     /* Declare OpMode members. */
     private RepeatersHardware robot = new RepeatersHardware();   // Use a Pushbot's hardware
@@ -53,27 +49,36 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         initialLightIntensity = robot.leftlightSensor.getLightDetected();
         initialLightIntensity = robot.rightlightSensor.getLightDetected();
 
+        red = true;
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
-
         // Wait for game start (driver press PLAY)
         waitForStart();
 
-        // Step 1: use leftmotor rotate robot right (30deg?) align with cornervortex
+        // Step 1: move forward(backward) to shoot
+        robot.leftMotor.setPower(-1);
+        robot.rightMotor.setPower(-1);
+        while (opModeIsActive() && (runtime.seconds() <0.25)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        // Step 2: use leftmotor rotate robot right (30deg?) align with cornervortex
         robot.rightMotor.setPower(0);
         robot.leftMotor.setPower(1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() <0.25)) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
         // Step 2:  Drive forward
         robot.rightMotor.setPower(1);
         robot.leftMotor.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.25)) {
-            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
+            telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
         // Step 3:  use rightmotor rotate robot left (30deg?) align with playingfieldwall
@@ -81,7 +86,7 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         robot.leftMotor.setPower(0);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.25)) {
-            telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
+            telemetry.addData("Path", "Leg 4: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
@@ -92,35 +97,6 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         findWhiteLine(7);
         pushButton();
 
-        // Step 6: move to position for rotation
-        robot.leftMotor.setPower(1);
-        robot.rightMotor.setPower(1);
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
-            telemetry.addData("Path", "Leg 6: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        // Step 7: rotate (45deg?) to shoot particle
-        robot.leftMotor.setPower(1);
-        robot.rightMotor.setPower(-1);
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
-            telemetry.addData("Path", "Leg 7: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        // Step 8: move forward(backward) to shoot
-        robot.leftMotor.setPower(-1);
-        robot.rightMotor.setPower(-1);
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
-            telemetry.addData("Path", "Leg 8: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        // Step 9: shoot particle
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
-        robot.flickerMotor.setPower(-1);
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 8: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
     }
     private void findWhiteLine(double timeout) {
         runtime.reset();
@@ -145,26 +121,26 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
             motor.setPower(0);
         }
     }
-        /*/robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        while (opModeIsActive() && (robot.lightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
-            // Display the light level while we are looking for the line
-            telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
-            telemetry.update();
-        }
-        /*/
+    /*/robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    while (opModeIsActive() && (robot.lightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
+        // Display the light level while we are looking for the line
+        telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
+        telemetry.update();
+    }
+    /*/
     private void pushButton() {
 
-            ramSequence();
-            Color color = getColor();
+        ramSequence();
+        Color color = getColor();
 
-            while ((color == Color.UNSURE || ((color == Color.RED) ^ red)) && opModeIsActive()) {
-                sleep(500);
-                ramSequence();
-                sleep(1000);
-                color = getColor();
-            }
+        while ((color == Color.UNSURE || ((color == Color.RED) ^ red)) && opModeIsActive()) {
+            sleep(500);
+            ramSequence();
+            sleep(1000);
+            color = getColor();
         }
+    }
 
     private void ramSequence() {
         performActionWithDuration(() -> {
@@ -212,11 +188,11 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         }
         return detectedColor;
     }
-        interface RobotAction {
+    interface RobotAction {
         void performAction();
-        }
+    }
 
-        private void performActionWithDuration(RobotAction action, double duration, String description) {
+    private void performActionWithDuration(RobotAction action, double duration, String description) {
         action.performAction();
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < duration)) {
