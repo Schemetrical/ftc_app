@@ -3,19 +3,14 @@ package org.firstinspires.ftc.teamcode.repeaters;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.g7tech.G7Auto;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import for_camera_opmodes.LinearOpModeCamera;
 
-import static java.lang.Math.PI;
+
 import static java.lang.Math.abs;
 
 /**
@@ -30,8 +25,8 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
     private ElapsedTime runtime = new ElapsedTime();
     private double initialLightIntensity = 0.0;
     private static final int ds2 = 2;
-    private static final double     WHITE_THRESHOLD = 0.1;
-    private static final double COLOR_DIFF_THRESHOLD = 10000000;
+    private static final double     WHITE_THRESHOLD = 0.03;
+    private static final double COLOR_DIFF_THRESHOLD = 5000000;
 
     public boolean red = false;
 
@@ -60,13 +55,14 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
 
         // Wait for game start (driver press PLAY)
         waitForStart();
+        startCamera();
 
         // Step 1:  Drive forward
-        startCamera();
         robot.rightMotor.setPower(1);
         robot.leftMotor.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.4)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.45
+        )) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -74,14 +70,21 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         robot.rightMotor.setPower(1);
         robot.leftMotor.setPower(0);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.24)) {
             telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
         // Step 3:  Drive forward to search for white line and press beacon
         findWhiteLine(6);
+        robot.leftMotor.setPower(-0.05);
+        robot.rightMotor.setPower(-0.05);
+        while (opModeIsActive() && (runtime.seconds() < 0.1)) {
+            telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
         pushButton();
+
         // Step 4: Driver forward again -repeat
         findWhiteLine(6);
         pushButton();
@@ -121,12 +124,12 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         sleep(500);
         while (opModeIsActive() && ((robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) || (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD)) && (runtime.seconds() < timeout)) {
             if (robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
-                robot.leftMotor.setPower(0.2);
+                robot.leftMotor.setPower(0.1);
             } else {
                 robot.leftMotor.setPower(0);
             }
             if (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
-                robot.rightMotor.setPower(0.2);
+                robot.rightMotor.setPower(0.1);
             } else {
                 robot.rightMotor.setPower(0);
             }
