@@ -140,8 +140,8 @@ public class BananaOp extends OpMode {
         }
 
         if (gamepad2.x) {
-            robot.servoSlideReleaseLeft.setPosition(0.05);
-            robot.servoSlideReleaseRight.setPosition(0.95);
+            robot.servoSlideReleaseLeft.setPosition(0);
+            robot.servoSlideReleaseRight.setPosition(1);
         } else if (gamepad2.y) {
             robot.servoSlideReleaseLeft.setPosition(0.5);
             robot.servoSlideReleaseRight.setPosition(0.5);

@@ -69,7 +69,7 @@ class BananaAuto extends LinearOpModeCamera {
     private ElapsedTime runtime = new ElapsedTime();
 
     boolean red = false;
-    boolean shooting = false;
+    boolean shooting = true;
     boolean pushingBall = false;
     boolean ramp = false;
 
@@ -123,11 +123,12 @@ class BananaAuto extends LinearOpModeCamera {
 
     private void runBall() {
         if (red) {
-            driveStraight(DRIVE_SPEED, 35);
+            driveStraight(DRIVE_SPEED, 40);
         } else {
-            driveStraight(DRIVE_SPEED, 25); // blue 25
+            driveStraight(DRIVE_SPEED, 50);
         }
         shoot();
+        sleep(17000);
         driveStraight(DRIVE_SPEED * 2, 120);
         cleanup();
     }
@@ -269,7 +270,7 @@ class BananaAuto extends LinearOpModeCamera {
 
                 // 480 x 640
                 for (int x = 0; x < rgbImage.getWidth(); x++) {
-                    for (int y = 0; y < rgbImage.getHeight(); y++) {
+                    for (int y = 200; y < rgbImage.getHeight(); y++) {
                         int pixel = rgbImage.getPixel(x, y);
                         redValue += red(pixel);
                         blueValue += blue(pixel);
@@ -341,6 +342,7 @@ class BananaAuto extends LinearOpModeCamera {
         for (DcMotorSimple motor: robot.allMotors) {
             motor.setPower(0);
         }
+        stopCamera();
     }
 
     interface RobotAction {
