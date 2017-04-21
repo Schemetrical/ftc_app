@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.repeaters;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.ServoEx;
+
 /**
  * Created by micro on 26-Feb-17.
  */
@@ -16,7 +19,7 @@ public class RepeatersHardware {
     DcMotor flickerMotor;
 
     Servo beaconServo;
-    Servo autobeaconServo;
+    CRServo autobeaconServo;
 
     DcMotor[] motors;
     DcMotorSimple[] allMotors;
@@ -34,9 +37,13 @@ public class RepeatersHardware {
         elevatorMotor = ahwMap.dcMotor.get("elevatorMotor");
         flickerMotor = ahwMap.dcMotor.get("flickerMotor");
 
+        // define lightsensors
+        leftlightSensor = ahwMap.lightSensor.get("leftlightSensor");
+        rightlightSensor = ahwMap.lightSensor.get("rightlightSensor");
+
         // define servos
         beaconServo = ahwMap.servo.get("beaconServo");
-        autobeaconServo = ahwMap.servo.get("autobeaconServo");
+        autobeaconServo = ahwMap.crservo.get("autobeaconServo");
 
         motors = new DcMotor[]{leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
 

@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import static java.lang.Math.min;
+
 @TeleOp(name="Repeaters Teleop", group="Repeaters")  // @Autonomous(...) is the other common choice
 public class RepeatersOp extends OpMode
 {
@@ -95,13 +97,16 @@ public class RepeatersOp extends OpMode
         } else { // Once is depressed, reset variable
             gamepad2pressed = false;
         }
-        //backup for linearslide
-        if (gamepad2.b) {
-            robot.beaconServo.setDirection(Servo.Direction.FORWARD);
-        }   else if (gamepad2.a) {
-            robot.beaconServo.setDirection(Servo.Direction.REVERSE);
-        }
+        //backup for linearslidep
 
+        robot.autobeaconServo.setPower(min(gamepad2.right_stick_y + 0.05, 1));
+        /*/
+        if (gamepad2.b) {
+            robot.autobeaconServo.setPower(1);
+        }   else if (gamepad2.a) {
+            robot.autobeaconServo.setPower(-1);
+        }
+        /*/
 
     }
 
