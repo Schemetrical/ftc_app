@@ -24,9 +24,10 @@ public class G7Auto extends LinearOpModeCamera {
     private double initialLightIntensity = 0.0;
     private static final int ds2 = 2;
     private static final double     WHITE_THRESHOLD = 0.1;
-    private static final double COLOR_DIFF_THRESHOLD = 10000000;
+    private static final double COLOR_DIFF_THRESHOLD = 2500000; // 10000000
 
     public boolean red = false;
+    boolean pushingBall = false;
 
     public enum Color {
         RED, BLUE, UNSURE
@@ -40,12 +41,48 @@ public class G7Auto extends LinearOpModeCamera {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        if (pushingBall) {
+            runBall();
+        } else {
+            runBeacon();
+        }
+        stopCamera();
+    }
+
+    private void runBall() {
+
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Ready to run");    //
+        telemetry.update();
+
+        // Wait for game start (driver press PLAY)
+        waitForStart();
 
 
+        // Step 1:  Move
+        performActionWithDuration(() -> {
+            robot.move(red ? 0 : PI, 1, 0);
+        }, 1.5, "Move");
+
+        // Step 2:  Shoot
+        performActionWithDuration(() -> {
+            robot.motorCatapultLeft.setPower(-1);
+        }, .5, "Shoot");
+
+        sleep(20000);
+
+        // Step 1:  Move
+        performActionWithDuration(() -> {
+            robot.move(red ? 0 : PI, 1, 0);
+        }, 1.5, "Move");
+    }
+
+    private void runBeacon() {
         robot.lightSensor.enableLed(true);
         sleep(500);
         initialLightIntensity = robot.lightSensor.getLightDetected();
 
+        startCamera();
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -56,42 +93,43 @@ public class G7Auto extends LinearOpModeCamera {
 
         // Step 1:  Move
         performActionWithDuration(() -> {
-            robot.move(PI/2, 1, 0);
+            robot.move(red ? 0 : PI, 1, 0);
         }, 1, "Move");
 
         // Step 2:  Shoot
         performActionWithDuration(() -> {
-            robot.motorCatapultLeft.setPower(1);
+            robot.motorCatapultLeft.setPower(-1);
         }, .5, "Shoot");
 
         // Step 3:  Move
         performActionWithDuration(() -> {
-            robot.move(PI/2, 1, 0);
+            robot.move(red ? 0 : PI, 1, 0);
         }, .5, "Move");
 
-        // Step 4:  Shoot
-        performActionWithDuration(() -> {
-            robot.motorCatapultRight.setPower(1);
-        }, .5, "Shoot");
+//        // Step 4:  Shoot
+//        performActionWithDuration(() -> {
+//            robot.motorCatapultRight.setPower(1);
+//        }, .5, "Shoot");
 
         // Step 5:  Move
         performActionWithDuration(() -> {
-            robot.move(red ? PI : 0, 1, 0);
+            robot.move(PI/2, 1, 0);
         }, 2, "Move");
 
         // Step 6:  Find White line
         findWhiteLine(3);
-        ramSequence();
+        pushButton();
 
-        // Step 7:  Find White line
-        findWhiteLine(7);
-        ramSequence();
+//        // Step 7:  Find White line
+//        findWhiteLine(7);
+//        pushButton();
+        telemetry.addData("Done", "!");
     }
 
     private void findWhiteLine(double timeout) {
         runtime.reset();
         sleep(500);
-        robot.move(PI/2, 0.25, 0);
+        robot.move(red ? 0 : PI, 0.25, 0);
         while (opModeIsActive() && (robot.lightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level: ",  robot.lightSensor.getLightDetected());
@@ -123,11 +161,11 @@ public class G7Auto extends LinearOpModeCamera {
 
     private void ramSequence() {
         performActionWithDuration(() -> {
-            robot.move(red ? PI : 0, 0.5, 0);
+            robot.move(PI/2, 0.5, 0);
         }, 1.5, "Ram");
 
         performActionWithDuration(() -> {
-            robot.move(red ? 0 : PI, 0.5, 0);
+            robot.move(-PI/2, 0.5, 0);
         }, .5, "Unram");
     }
     interface RobotAction {
@@ -149,7 +187,7 @@ public class G7Auto extends LinearOpModeCamera {
 
                 // 480 x 640
                 for (int x = 0; x < rgbImage.getWidth(); x++) {
-                    for (int y = 0; y < rgbImage.getHeight(); y++) {
+                    for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
                         int pixel = rgbImage.getPixel(x, y);
                         redValue += red(pixel);
                         blueValue += blue(pixel);

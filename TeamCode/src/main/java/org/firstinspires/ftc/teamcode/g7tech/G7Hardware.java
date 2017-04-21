@@ -61,7 +61,7 @@ class G7Hardware {
 
 //        compassSensor = (HiTechnicNxtCompassSensor)ahwMap.compassSensor.get("cs");
 //
-//        lightSensor = ahwMap.lightSensor.get("ls");
+        lightSensor = ahwMap.lightSensor.get("ls");
 //        lightSensorFar = ahwMap.lightSensor.get("lsf");
 
         // Set all motors to zero power
