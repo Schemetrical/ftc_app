@@ -186,11 +186,12 @@ class BananaAuto extends LinearOpModeCamera {
     // ========================
 
     private void setup() {
+        /*
         robot.motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
 
         robot.servoBallStopper.setPosition(0.4);
 //        robot.lightSensor.enableLed(true);
@@ -220,6 +221,7 @@ class BananaAuto extends LinearOpModeCamera {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
+            /*
             newLeftTarget = robot.motorLeft.getCurrentPosition() + (int)(left * COUNTS_PER_CM);
             newRightTarget = robot.motorRight.getCurrentPosition() + (int)(right * COUNTS_PER_CM);
 
@@ -243,7 +245,7 @@ class BananaAuto extends LinearOpModeCamera {
 
             // Stop all motion;
             robot.motorLeft.setPower(0);
-            robot.motorRight.setPower(0);
+            robot.motorRight.setPower(0);*/
         }
     }
 
@@ -293,6 +295,7 @@ class BananaAuto extends LinearOpModeCamera {
     }
 
     private void pushButton() {
+        /*
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -306,7 +309,7 @@ class BananaAuto extends LinearOpModeCamera {
             color = getColor();
         }
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
     }
 
     private void ramSequence() {
@@ -322,6 +325,7 @@ class BananaAuto extends LinearOpModeCamera {
     private void findWhiteLine(double timeout) {
 
         runtime.reset();
+        /*
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(500);
@@ -335,7 +339,7 @@ class BananaAuto extends LinearOpModeCamera {
             motor.setPower(0);
         }
         robot.motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
     }
 
     private void cleanup() {

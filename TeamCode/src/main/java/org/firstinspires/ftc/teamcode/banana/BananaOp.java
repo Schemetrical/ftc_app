@@ -63,10 +63,9 @@ public class BananaOp extends OpMode {
 
         robot.init(hardwareMap);
 
-        robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        robot.motorWinchRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//
 
         robot.servoSlideReleaseLeft.setPosition(0.5);
         robot.servoSlideReleaseRight.setPosition(0.5);
@@ -122,7 +121,7 @@ public class BananaOp extends OpMode {
         } else if (gamepad1.dpad_down) {
             robot.move(flipped ? 1 : -1, flipped ? 1 : -1);
         } else if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
-            robot.rotate(gamepad1.right_trigger - gamepad1.left_trigger);
+            robot.strafe(gamepad1.right_trigger - gamepad1.left_trigger);
         } else {
             robot.move((flipped ? gamepad1.right_stick_y : -gamepad1.left_stick_y) * multiplier,
                     (flipped ? gamepad1.left_stick_y : -gamepad1.right_stick_y) * multiplier);

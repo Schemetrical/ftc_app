@@ -16,12 +16,12 @@ import static java.lang.Math.sqrt;
 class BananaHardware {
     /* Public OpMode members. */
     /* Declare OpMode members. */
-    DcMotor motorLeft, motorRight;
+    DcMotor motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight;
 
     DcMotorSimple motorFlicker;
     DcMotorSimple motorBallSpinner;
-    DcMotorSimple motorWinchLeft;
-    DcMotorSimple motorWinchRight;
+    private DcMotorSimple motorWinchLeft;
+    private DcMotorSimple motorWinchRight;
 
     Servo servoBallStopper;
     Servo servoSlideReleaseLeft, servoSlideReleaseRight;
@@ -40,8 +40,10 @@ class BananaHardware {
     public void init(HardwareMap ahwMap) {
 
         // Define and Initialize Motors
-        motorLeft = ahwMap.dcMotor.get("ml");
-        motorRight = ahwMap.dcMotor.get("mr");
+        motorFrontLeft = ahwMap.dcMotor.get("mfl");
+        motorFrontRight = ahwMap.dcMotor.get("mfr");
+        motorBackLeft = ahwMap.dcMotor.get("mbl");
+        motorBackRight = ahwMap.dcMotor.get("mbr");
 
         motorFlicker = ahwMap.dcMotor.get("mf");
         motorBallSpinner = ahwMap.dcMotor.get("ms");
@@ -49,12 +51,14 @@ class BananaHardware {
         motorWinchLeft = ahwMap.dcMotor.get("mwl");
         motorWinchRight = ahwMap.dcMotor.get("mwr");
 
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //        motorFlicker.setDirection(DcMotorSimple.Direction.REVERSE);
 
         allMotors = new DcMotorSimple[]{
-                motorLeft,
-                motorRight,
+                motorFrontLeft,
+                motorFrontRight,
+                motorBackLeft,
+                motorBackRight,
                 motorFlicker,
                 motorBallSpinner,
                 motorWinchLeft,
@@ -68,6 +72,8 @@ class BananaHardware {
         servoSlideReleaseLeft = ahwMap.servo.get("ssrl");
         servoSlideReleaseRight = ahwMap.servo.get("ssrr");
 
+        motorWinchRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
         // Set all motors to zero power
         for (DcMotorSimple motor: allMotors) {
             motor.setPower(0);
@@ -75,15 +81,28 @@ class BananaHardware {
     }
 
     void move(double left, double right) {
-        motorLeft.setPower(left);
-        motorRight.setPower(right);
+        motorFrontLeft.setPower(-left);
+        motorBackLeft.setPower(-left);
+        motorFrontRight.setPower(right);
+        motorBackRight.setPower(right);
+    }
+
+    void strafe(double power) { // right is positive, left is negative
+        motorFrontLeft.setPower(-power);
+        motorFrontRight.setPower(-power);
+        motorBackLeft.setPower(power);
+        motorBackRight.setPower(power);
     }
 
     // clockwise rotation = positive power
     void rotate(double power) {
-        motorLeft.setPower(power);
-        motorRight.setPower(-power);
+        motorFrontLeft.setPower(-power);
+        motorBackLeft.setPower(-power);
+        motorFrontRight.setPower(-power);
+        motorBackRight.setPower(-power);
     }
+
+
 
     void winch(double power) {
         motorWinchLeft.setPower(power);
