@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.repeaters;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,7 +18,7 @@ import static java.lang.Math.abs;
  * Created by MichaelL on 4/18/17.
  */
 
-@Autonomous(name="Repeaters Autonomous", group="Repeaters")
+@Autonomous(name="Repeaters AutoRedBeacon", group="Repeaters")
 public class RepeatersAutoRedBeacon extends LinearOpModeCamera{
 
     /* Declare OpMode members. */
@@ -144,11 +145,11 @@ public class RepeatersAutoRedBeacon extends LinearOpModeCamera{
 
     private void ramSequence() {
         performActionWithDuration(() -> {
-            robot.autobeaconServo.setDirection(Servo.Direction.FORWARD);
+            robot.autobeaconServo.setPower(1);
         }, 1.5, "Ram");
 
         performActionWithDuration(() -> {
-            robot.autobeaconServo.setDirection(Servo.Direction.REVERSE);
+            robot.autobeaconServo.setPower(-1);
         }, 1.5, "Unram");
     }
 

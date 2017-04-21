@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,7 +22,7 @@ import static java.lang.Math.abs;
  * Created by MichaelL on 4/18/17.
  */
 
-@Autonomous(name="Repeaters Autonomous", group="Repeaters")
+@Autonomous(name="Repeaters AutoBlueBeacon", group="Repeaters")
 public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
 
     /* Declare OpMode members. */
@@ -60,60 +61,53 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         // Wait for game start (driver press PLAY)
         waitForStart();
 
-        // Step 1: use leftmotor rotate robot right (30deg?) align with cornervortex
-        robot.rightMotor.setPower(0);
+        // Step 1:  Drive forward
+        startCamera();
+        robot.rightMotor.setPower(1);
         robot.leftMotor.setPower(1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() <0.25)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.4)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        // Step 2:  Drive forward
-        robot.rightMotor.setPower(1);
-        robot.leftMotor.setPower(1);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.25)) {
-            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        // Step 3:  use rightmotor rotate robot left (30deg?) align with playingfieldwall
+        // Step 2:  use rightmotor rotate robot left (30deg?) align with playingfieldwall
         robot.rightMotor.setPower(1);
         robot.leftMotor.setPower(0);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.25)) {
-            telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
+            telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 4:  Drive forward to search for white line and press beacon
-        findWhiteLine(3);
+        // Step 3:  Drive forward to search for white line and press beacon
+        findWhiteLine(6);
         pushButton();
-        // Step 5: Driver forward again -repeat
-        findWhiteLine(7);
+        // Step 4: Driver forward again -repeat
+        findWhiteLine(6);
         pushButton();
 
-        // Step 6: move to position for rotation
+        // Step 5: move to position for rotation
         robot.leftMotor.setPower(1);
         robot.rightMotor.setPower(1);
         while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 5: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        // Step 6: rotate (45deg?) to shoot particle
+        robot.leftMotor.setPower(1);
+        robot.rightMotor.setPower(-1);
+        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
             telemetry.addData("Path", "Leg 6: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        // Step 7: rotate (45deg?) to shoot particle
-        robot.leftMotor.setPower(1);
+        // Step 7: move forward(backward) to shoot
+        robot.leftMotor.setPower(-1);
         robot.rightMotor.setPower(-1);
         while (opModeIsActive() && (runtime.seconds() < 0.3)) {
             telemetry.addData("Path", "Leg 7: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        // Step 8: move forward(backward) to shoot
-        robot.leftMotor.setPower(-1);
-        robot.rightMotor.setPower(-1);
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
-            telemetry.addData("Path", "Leg 8: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        // Step 9: shoot particle
+        // Step 8: shoot particle
         robot.leftMotor.setPower(0);
         robot.rightMotor.setPower(0);
         robot.flickerMotor.setPower(-1);
@@ -127,12 +121,12 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         sleep(500);
         while (opModeIsActive() && ((robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) || (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD)) && (runtime.seconds() < timeout)) {
             if (robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
-                robot.leftMotor.setPower(1);
+                robot.leftMotor.setPower(0.2);
             } else {
                 robot.leftMotor.setPower(0);
             }
             if (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
-                robot.rightMotor.setPower(1);
+                robot.rightMotor.setPower(0.2);
             } else {
                 robot.rightMotor.setPower(0);
             }
@@ -168,12 +162,15 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
 
     private void ramSequence() {
         performActionWithDuration(() -> {
-            robot.autobeaconServo.setDirection(Servo.Direction.FORWARD);
+            robot.autobeaconServo.setPower(1);
         }, 1.5, "Ram");
 
         performActionWithDuration(() -> {
-            robot.autobeaconServo.setDirection(Servo.Direction.REVERSE);
+            robot.autobeaconServo.setPower(-1);
         }, 1.5, "Unram");
+
+        robot.autobeaconServo.setPower(0.05);
+
     }
 
     private Color getColor() {
