@@ -72,6 +72,7 @@ class BananaHardware {
         servoSlideReleaseLeft = ahwMap.servo.get("ssrl");
         servoSlideReleaseRight = ahwMap.servo.get("ssrr");
 
+        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorWinchRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Set all motors to zero power

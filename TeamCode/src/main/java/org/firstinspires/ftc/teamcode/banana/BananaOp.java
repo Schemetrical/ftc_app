@@ -120,7 +120,7 @@ public class BananaOp extends OpMode {
             robot.move(flipped ? -1 : 1, flipped ? -1 : 1);
         } else if (gamepad1.dpad_down) {
             robot.move(flipped ? 1 : -1, flipped ? 1 : -1);
-        } else if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
+        } else if (gamepad1.left_trigger > 0 || gamepad1.right_trigger > 0) {
             robot.strafe(gamepad1.right_trigger - gamepad1.left_trigger);
         } else {
             robot.move((flipped ? gamepad1.right_stick_y : -gamepad1.left_stick_y) * multiplier,
