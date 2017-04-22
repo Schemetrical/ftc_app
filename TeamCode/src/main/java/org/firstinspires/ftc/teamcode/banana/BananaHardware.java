@@ -65,7 +65,7 @@ class BananaHardware {
                 motorWinchRight
         };
 
-//        lightSensor = ahwMap.lightSensor.get("ls");
+        lightSensor = ahwMap.lightSensor.get("ls");
 
         servoBallStopper = ahwMap.servo.get("sbs");
 
@@ -88,12 +88,12 @@ class BananaHardware {
         motorBackRight.setPower(right);
     }
 
-    void strafe(double power) { // right is positive, left is negative
-        motorFrontLeft.setPower(-power);
-        motorFrontRight.setPower(-power);
-        motorBackLeft.setPower(power);
-        motorBackRight.setPower(power);
-    }
+//    void strafe(double power) { // right is positive, left is negative
+//        motorFrontLeft.setPower(-power);
+//        motorFrontRight.setPower(-power);
+//        motorBackLeft.setPower(power);
+//        motorBackRight.setPower(power);
+//    }
 
     // clockwise rotation = positive power
     void rotate(double power) {
