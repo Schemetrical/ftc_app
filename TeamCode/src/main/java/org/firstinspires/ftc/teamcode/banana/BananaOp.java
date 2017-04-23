@@ -120,8 +120,8 @@ public class BananaOp extends OpMode {
             robot.move(flipped ? -1 : 1, flipped ? -1 : 1);
         } else if (gamepad1.dpad_down) {
             robot.move(flipped ? 1 : -1, flipped ? 1 : -1);
-        } else if (gamepad1.left_trigger > 0 || gamepad1.left_trigger > 0) {
-            robot.strafe(gamepad1.right_trigger - gamepad1.left_trigger);
+        } else if (gamepad1.left_trigger > 0 || gamepad1.right_trigger > 0) {
+//            robot.strafe(gamepad1.right_trigger - gamepad1.left_trigger);
         } else {
             robot.move((flipped ? gamepad1.right_stick_y : -gamepad1.left_stick_y) * multiplier,
                     (flipped ? gamepad1.left_stick_y : -gamepad1.right_stick_y) * multiplier);
@@ -139,14 +139,14 @@ public class BananaOp extends OpMode {
         }
 
         if (gamepad2.x) {
-            robot.servoSlideReleaseLeft.setPosition(0);
-            robot.servoSlideReleaseRight.setPosition(1);
+            robot.servoSlideReleaseLeft.setPosition(0.01);
+            robot.servoSlideReleaseRight.setPosition(0.99);
         } else if (gamepad2.y) {
             robot.servoSlideReleaseLeft.setPosition(0.5);
             robot.servoSlideReleaseRight.setPosition(0.5);
         }
 
-        if (gamepad2.right_bumper) {
+        if (gamepad2.right_bumper || gamepad2.left_bumper) {
             robot.servoBallStopper.setPosition(0.0);
         } else {
             robot.servoBallStopper.setPosition(0.4);
