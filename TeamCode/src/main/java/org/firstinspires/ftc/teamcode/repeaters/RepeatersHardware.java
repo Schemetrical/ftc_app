@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.ServoEx;
  */
 
 public class RepeatersHardware {
+    DcMotor fleftMotor;
+    DcMotor frightMotor;
     DcMotor leftMotor;
     DcMotor rightMotor;
     DcMotor collectorMotor;
@@ -31,6 +33,8 @@ public class RepeatersHardware {
     public void init(HardwareMap ahwMap) {
 
         // define and initialize driveMotors
+        fleftMotor = ahwMap.dcMotor.get("fleftmotor");
+        frightMotor = ahwMap.dcMotor.get("frightmotor");
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
@@ -45,7 +49,7 @@ public class RepeatersHardware {
         beaconServo = ahwMap.servo.get("beaconServo");
         autobeaconServo = ahwMap.crservo.get("autobeaconServo");
 
-        motors = new DcMotor[]{leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
+        motors = new DcMotor[]{fleftMotor, frightMotor, leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
 
         //set motor power to 0
         for (DcMotor motor: motors) {
@@ -53,6 +57,8 @@ public class RepeatersHardware {
         }
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
         allMotors = new DcMotorSimple[]{
+                fleftMotor,
+                frightMotor,
                 leftMotor,
                 rightMotor,
                 collectorMotor,
@@ -63,9 +69,12 @@ public class RepeatersHardware {
     }
 
     void move(double left, double right) {
+        fleftMotor.setPower(left);
+        frightMotor.setPower(right);
         leftMotor.setPower(left);
         rightMotor.setPower(right);
     }
+
 
     void beacon(boolean moveDown) {
         if (moveDown) {
