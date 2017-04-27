@@ -9,7 +9,7 @@ import for_camera_opmodes.LinearOpModeCamera;
  * Created by MichaelL on 4/24/17.
  */
 
-@Autonomous(name="Repeaters Autonomous", group="Repeaters")
+@Autonomous(name="Repeaters AutoNoCenter", group="Repeaters")
 public class RepeatersAutoNoCenter extends LinearOpModeCamera {
     /* Declare OpMode members. */
     private RepeatersHardware robot = new RepeatersHardware();   // Use a Pushbot's hardware

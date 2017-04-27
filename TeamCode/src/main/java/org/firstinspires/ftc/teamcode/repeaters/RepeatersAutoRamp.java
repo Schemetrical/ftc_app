@@ -10,7 +10,7 @@ import for_camera_opmodes.LinearOpModeCamera;
  */
 
 
-@Autonomous(name="Repeaters Autonomous", group="Repeaters")
+@Autonomous(name="Repeaters AutoRamp", group="Repeaters")
 public class RepeatersAutoRamp extends LinearOpModeCamera {
 
     private RepeatersHardware robot = new RepeatersHardware();

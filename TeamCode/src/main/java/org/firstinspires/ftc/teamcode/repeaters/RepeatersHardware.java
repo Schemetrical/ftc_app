@@ -27,7 +27,6 @@ public class RepeatersHardware {
     DcMotorSimple[] allMotors;
 
     //    HiTechnicNxtCompassSensor compassSensor;
-    LightSensor leftlightSensor;
     LightSensor rightlightSensor;
 
     public void init(HardwareMap ahwMap) {
@@ -42,7 +41,6 @@ public class RepeatersHardware {
         flickerMotor = ahwMap.dcMotor.get("flickerMotor");
 
         // define lightsensors
-        leftlightSensor = ahwMap.lightSensor.get("leftlightSensor");
         rightlightSensor = ahwMap.lightSensor.get("rightlightSensor");
 
         // define servos

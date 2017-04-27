@@ -19,7 +19,7 @@ import static java.lang.Math.abs;
 
 @Autonomous(name="Repeaters AutoBlueBeacon", group="Repeaters")
 public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
-
+    private static final double     DRIVE_SPEED             = 0.4;
     /* Declare OpMode members. */
     private RepeatersHardware robot = new RepeatersHardware();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
@@ -43,10 +43,10 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
          */
         robot.init(hardwareMap);
 
-        robot.leftlightSensor.enableLed(true);
+
         robot.rightlightSensor.enableLed(true);
         sleep(500);
-        initialLightIntensity = robot.leftlightSensor.getLightDetected();
+
         initialLightIntensity = robot.rightlightSensor.getLightDetected();
 
         // Send telemetry message to signify robot waiting;
@@ -120,25 +120,17 @@ public class RepeatersAutoBlueBeacon extends LinearOpModeCamera{
         }
     }
     private void findWhiteLine(double timeout) {
+
         runtime.reset();
+
         sleep(500);
-        while (opModeIsActive() && ((robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) || (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD)) && (runtime.seconds() < timeout)) {
-            if (robot.leftlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
-                robot.leftMotor.setPower(0.1);
-            } else {
-                robot.leftMotor.setPower(0);
-            }
-            if (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) {
-                robot.rightMotor.setPower(0.1);
-            } else {
-                robot.rightMotor.setPower(0);
-            }
-            telemetry.addData("Light Level: ", robot.leftlightSensor.getLightDetected());
-            telemetry.update();
-            telemetry.addData("Light Level: ", robot.rightlightSensor.getLightDetected());
+        robot.move(red ? -DRIVE_SPEED * 0.25 : DRIVE_SPEED * 0.25, red ? -DRIVE_SPEED * 0.25 : DRIVE_SPEED * 0.25);
+        while (opModeIsActive() && (robot.rightlightSensor.getLightDetected() < initialLightIntensity + WHITE_THRESHOLD) && (runtime.seconds() < timeout)) {
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level: ",  robot.rightlightSensor.getLightDetected());
             telemetry.update();
         }
-        for (DcMotorSimple motor : robot.allMotors) {
+        for (DcMotorSimple motor: robot.allMotors) {
             motor.setPower(0);
         }
     }
