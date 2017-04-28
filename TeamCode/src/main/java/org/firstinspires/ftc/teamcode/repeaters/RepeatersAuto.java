@@ -37,8 +37,10 @@ public class RepeatersAuto extends LinearOpModeCamera {
         // Step 1:  Drive forward to aim
             robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
+            robot.frightMotor.setPower(-1);
+            robot.fleftMotor.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.4)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -56,8 +58,10 @@ public class RepeatersAuto extends LinearOpModeCamera {
             robot.flickerMotor.setPower(0);
             robot.rightMotor.setPower(-1);
             robot.leftMotor.setPower(-1);
+            robot.frightMotor.setPower(-1);
+            robot.fleftMotor.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
             telemetry.addData("Path", "Leg 3: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
