@@ -32,8 +32,8 @@ public class RepeatersHardware {
     public void init(HardwareMap ahwMap) {
 
         // define and initialize driveMotors
-        fleftMotor = ahwMap.dcMotor.get("fleftmotor");
-        frightMotor = ahwMap.dcMotor.get("frightmotor");
+        fleftMotor = ahwMap.dcMotor.get("fleftMotor");
+        frightMotor = ahwMap.dcMotor.get("frightMotor");
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
@@ -67,7 +67,7 @@ public class RepeatersHardware {
     }
 
     void move(double left, double right) {
-        fleftMotor.setPower(left);
+        fleftMotor.setPower(-left);
         frightMotor.setPower(right);
         leftMotor.setPower(left);
         rightMotor.setPower(right);
