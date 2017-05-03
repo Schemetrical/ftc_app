@@ -69,7 +69,7 @@ public class RepeatersHardware {
     void move(double left, double right) {
         fleftMotor.setPower(-left);
         frightMotor.setPower(right);
-        leftMotor.setPower(left);
+        leftMotor.setPower(-left);
         rightMotor.setPower(right);
     }
 
