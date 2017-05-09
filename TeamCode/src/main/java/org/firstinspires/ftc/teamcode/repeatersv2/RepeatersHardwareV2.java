@@ -12,8 +12,6 @@ import com.qualcomm.robotcore.hardware.ServoEx;
  */
 
 public class RepeatersHardwareV2 {
-    DcMotor fleftMotor;
-    DcMotor frightMotor;
     DcMotor leftMotor;
     DcMotor rightMotor;
     DcMotor collectorMotor;
@@ -32,8 +30,6 @@ public class RepeatersHardwareV2 {
     public void init(HardwareMap ahwMap) {
 
         // define and initialize driveMotors
-        fleftMotor = ahwMap.dcMotor.get("fleftMotor");
-        frightMotor = ahwMap.dcMotor.get("frightMotor");
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         collectorMotor = ahwMap.dcMotor.get("collectorMotor");
@@ -47,7 +43,7 @@ public class RepeatersHardwareV2 {
         beaconServo = ahwMap.servo.get("beaconServo");
         autobeaconServo = ahwMap.crservo.get("autobeaconServo");
 
-        motors = new DcMotor[]{fleftMotor, frightMotor, leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
+        motors = new DcMotor[]{leftMotor, rightMotor, collectorMotor, elevatorMotor, flickerMotor};
 
         //set motor power to 0
         for (DcMotor motor: motors) {
@@ -55,8 +51,6 @@ public class RepeatersHardwareV2 {
         }
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
         allMotors = new DcMotorSimple[]{
-                fleftMotor,
-                frightMotor,
                 leftMotor,
                 rightMotor,
                 collectorMotor,
@@ -67,9 +61,7 @@ public class RepeatersHardwareV2 {
     }
 
     void move(double left, double right) {
-        fleftMotor.setPower(-left);
-        frightMotor.setPower(right);
-        leftMotor.setPower(-left);
+        leftMotor.setPower(left);
         rightMotor.setPower(right);
     }
 

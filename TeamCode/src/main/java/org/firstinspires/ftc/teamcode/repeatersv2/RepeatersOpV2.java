@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static java.lang.Math.min;
 
-@TeleOp(name="Repeaters Teleop", group="RepeatersV2")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Repeaters TeleopV2", group="RepeatersV2")  // @Autonomous(...) is the other common choice
 public class RepeatersOpV2 extends OpMode
 {
     /* Declare OpMode members. */

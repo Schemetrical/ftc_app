@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 
 @Autonomous (name="RepeatersAuto2BallsNoCenterV2",group="RepeatersV2")
-public class RepeatersAuto2BallsNoCenterV2 extends RepeatersAuto2BallsV2{
+public class RepeatersAuto2BallsNoCenterV2 extends RepeatersAutoV2{
     @Override
     public void runOpMode() {
         autoNoCenter = true;

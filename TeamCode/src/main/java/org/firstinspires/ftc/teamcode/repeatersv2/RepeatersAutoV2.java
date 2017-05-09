@@ -26,7 +26,7 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    private static final double     DRIVE_SPEED             = 0.4;     // Nominal speed for better accuracy.
+    private static final double     DRIVE_SPEED             = 0.6;     // Nominal speed for better accuracy.
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -77,48 +77,48 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     private void runRamp() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 0.7, "Move 1");
             shoot2();
             performActionWithDuration(() -> robot.move(-DRIVE_SPEED,DRIVE_SPEED), 0.5, "Rotate 1");
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 2, "Move2");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.7, "Move2");
         } else {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 0.7, "Move 1");
             shoot2();
             performActionWithDuration(() -> robot.move(DRIVE_SPEED,-DRIVE_SPEED), 0.5, "Rotate 1");
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 2, "Move2");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.7, "Move2");
         }
         cleanup();
     }
     private void runBall() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
         }
         shoot();
-        performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 2, "Move 2");
+        performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.7, "Move 2");
         cleanup();
     }
 
     private void runBall2() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
         }
         shoot2();
-        performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 2, "Move 2");
+        performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.7, "Move 2");
         cleanup();
     }
 
     private void runBallNoCenter() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.3, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
         }
         shoot2();
         sleep(500);
@@ -129,42 +129,37 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
 
         if (red) {
 // RED  =======================
-/*
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), .7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.3, "Move 1");
             shoot();
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, 0), 0.25, "Rotate 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED),1.5, "Move 2");
+            performActionWithDuration(() -> robot.move(0, -DRIVE_SPEED), 0.25, "Rotate 2");
+            sleep(500);
 
-            drive(DRIVE_SPEED, 0, 32);
-
-            driveStraight(DRIVE_SPEED, red ? -149 : 130); // 106
+            //Beacon1
             findWhiteLine(8);
+            ramSequence();
+            //Beacon2
+            findWhiteLine(8);
+            ramSequence();
 
-            turn(TURN_SPEED, red ? -37 : 48);*/
         } else {
 // BLUE =======================
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1, "Move 1");
-            shoot();
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1.5, "Move 1");
+            performActionWithDuration(() -> robot.move(0, DRIVE_SPEED),0.25, "Rotate 1");
+            sleep(500);
 
-//            performActionWithDuration(() -> robot.strafe(DRIVE_SPEED), 1, "Strafe");
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1, "Move 2");
+            //Beacon1
+            findWhiteLine(8);
+            ramSequence();
+            //Beacon2
+            findWhiteLine(8);
+            ramSequence();
 
-//            performActionWithDuration(() -> robot.strafe(DRIVE_SPEED), 1.6, "Strafe 3");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED, -DRIVE_SPEED), 0.4, "Prep 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.0, "Prep 2");
+            shoot2();
         }
-
-
-// BEACON 1 =======================
-        performActionWithDuration(() -> robot.move(0, DRIVE_SPEED), 0.5, "Turn 1");
-        findWhiteLine(8);
-        pushButton();
-
-// BEACON 2 =======================
-        performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 1, "Move 4");
-        findWhiteLine(8);
-
-        pushButton();
-
-/*
-        turn(TURN_SPEED, red ? -45 : 30);
-        driveStraight(DRIVE_SPEED, red ? 48.0 : -140);*/
 
         cleanup();
     }
@@ -186,15 +181,15 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
 
     private void shoot() {
         if (shooting) {
-            performActionWithDuration(() -> robot.flickerMotor.setPower(1), 1.2, "Shot 1");
+            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 1.5, "Shot 1");
         }
     }
 
     private void shoot2() {
         if (shooting2) {
-            performActionWithDuration(() -> robot.flickerMotor.setPower(1), 1.2, "Shot 1");
+            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 1.5, "Shot 1");
             performActionWithDuration(() -> robot.elevatorMotor.setPower(1), 2.2, "Prep 1");
-            performActionWithDuration(() -> robot.flickerMotor.setPower(1), 1.2, "Shot 2");
+            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 1.5, "Shot 2");
 
         }
     }
@@ -248,9 +243,9 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     }
 
     private void ramSequence() {
-        performActionWithDuration(() -> robot.autobeaconServo.setPower(1), 0.7, "Ram");
+        performActionWithDuration(() -> robot.autobeaconServo.setPower(1), 1.5, "Ram");
         sleep(500);
-        performActionWithDuration(() -> robot.autobeaconServo.setPower(-1), 0.7, "Unram");
+        performActionWithDuration(() -> robot.autobeaconServo.setPower(-1), 1.5, "Unram");
     }
 
     private void findWhiteLine(double timeout) {
