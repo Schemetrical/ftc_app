@@ -92,9 +92,9 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     private void runBall() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
         }
         shoot();
         performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.7, "Move 2");
@@ -104,9 +104,9 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     private void runBall2() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
         }
         shoot2();
         performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.7, "Move 2");
@@ -116,9 +116,9 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     private void runBallNoCenter() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
         }
         shoot2();
         sleep(500);
@@ -181,15 +181,15 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
 
     private void shoot() {
         if (shooting) {
-            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 1.5, "Shot 1");
+            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 2, "Shot 1");
         }
     }
 
     private void shoot2() {
         if (shooting2) {
-            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 1.5, "Shot 1");
-            performActionWithDuration(() -> robot.elevatorMotor.setPower(1), 2.2, "Prep 1");
-            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 1.5, "Shot 2");
+            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 2, "Shot 1");
+            performActionWithDuration(() -> robot.elevatorMotor.setPower(-1), 3, "Prep 1");
+            performActionWithDuration(() -> robot.flickerMotor.setPower(-1), 2, "Shot 2");
 
         }
     }
