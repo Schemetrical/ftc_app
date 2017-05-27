@@ -65,7 +65,6 @@ public class RepeatersHardwareV2 {
         rightMotor.setPower(right);
     }
 
-
     void beacon(boolean moveDown) {
         if (moveDown) {
             beaconServo.setPosition(0.94);

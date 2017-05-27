@@ -138,10 +138,10 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
 
             //Beacon1
             findWhiteLine(8);
-            ramSequence();
+            pushButton();
             //Beacon2
             findWhiteLine(8);
-            ramSequence();
+            pushButton();
 
         } else {
 // BLUE =======================
@@ -232,14 +232,16 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     }
 
     private void pushButton() {
-//        ramSequence();
-        Color color = getColor();
-        while (color == Color.UNSURE) {
-            color = getColor();
-        }
-        boolean driveForward = (color == Color.RED) == red; // RIGHT RED AND RED, RIGHT BLUE AND BLUE
 
         ramSequence();
+        Color color = getColor();
+
+        while ((color == Color.UNSURE || ((color == Color.RED) ^ red)) && opModeIsActive()) {
+            sleep(500);
+            ramSequence();
+            sleep(1000);
+            color = getColor();
+        }
     }
 
     private void ramSequence() {
