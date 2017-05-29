@@ -77,12 +77,12 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     private void runRamp() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 0.9, "Move 1");
             shoot2();
             performActionWithDuration(() -> robot.move(-DRIVE_SPEED,DRIVE_SPEED), 0.5, "Rotate 1");
             performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.7, "Move2");
         } else {
-            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 0.7, "Move 1");
+            performActionWithDuration(() -> robot.move(DRIVE_SPEED, DRIVE_SPEED), 0.9, "Move 1");
             shoot2();
             performActionWithDuration(() -> robot.move(DRIVE_SPEED,-DRIVE_SPEED), 0.5, "Rotate 1");
             performActionWithDuration(() -> robot.move(DRIVE_SPEED,DRIVE_SPEED), 1.7, "Move2");
@@ -92,24 +92,24 @@ class RepeatersAutoV2 extends LinearOpModeCamera {
     private void runBall() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.9, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.9, "Move 1");
         }
         shoot();
-        performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.7, "Move 2");
+        performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.8, "Move 2");
         cleanup();
     }
 
     private void runBall2() {
         sleep(15000);
         if (red) {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.9, "Move 1");
         } else {
-            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.1, "Move 1");
+            performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 0.9, "Move 1");
         }
         shoot2();
-        performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.7, "Move 2");
+        performActionWithDuration(() -> robot.move(-DRIVE_SPEED, -DRIVE_SPEED), 1.8, "Move 2");
         cleanup();
     }
 
